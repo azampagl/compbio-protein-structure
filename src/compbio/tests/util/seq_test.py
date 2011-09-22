@@ -4,11 +4,11 @@ Unit tests for the sequence modules of compbio.
 @author  azampagl@azampagl.com (Aaron Zampaglione)
 @copyright MIT
 """
-from compbio.seq import global_align, local_align
 import unittest
 
+from compbio.util.seq import global_align, local_align
 
-class TestCompbioSeq(unittest.TestCase):
+class TestCompbioUtilSeq(unittest.TestCase):
     """
     """
 
