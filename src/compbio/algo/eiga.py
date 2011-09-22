@@ -74,7 +74,7 @@ class Eiga(object):
     # Distance matrices
     dmatrices = {}
     
-    # Distance matrices
+    # Contact matrices
     cmatrices = {}
     
     def __init__(self, structures, opts=None):
@@ -118,6 +118,6 @@ class Eiga(object):
             for j in cols:
                 value = dmatrix[i][j]
                 if value >= 0.0 and value <= k:
-                    cmatrix[i][j] = 1 - ik * dmatrix[i][j]
+                    cmatrix[i][j] = 1 - ik * value
         
         return cmatrix
