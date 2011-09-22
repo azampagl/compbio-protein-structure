@@ -1,7 +1,7 @@
 '''
-Created on Sep 15, 2011
+Unit tests for the EIGA class.
 
-@author: sysadmin
+@author Aaron Zampaglione <azapagl@azampagl.com>
 '''
 import unittest
 
@@ -17,15 +17,32 @@ class TestCompbioAlgoEiga(unittest.TestCase):
                   ("d1axib2", "../../../../data/ent/d1axib2.ent")]
     
     def setUp(self):
-        self.eiga = Eiga(self.structures)
-    
-    def tearDown(self):
+        """
+        """
         pass
     
-    def testName(self):
-        print(self.eiga.d)
+    def tearDown(self):
+        """
+        """
+        pass
     
+    def testCmatrix(self):
+        """
+        """
+        eiga = Eiga([self.structures[0]])
+        eiga.cmatrices
+    
+    def testCoords(self):
+        """
+        """
+        Eiga.coords(self.structures[0][0], self.structures[0][1])
+    
+    def testDmatrix(self):
+        """
+        """
+        coords = Eiga.coords(self.structures[0][0], self.structures[0][1])
+        Eiga.dmatrix(coords)
+
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
