@@ -29,19 +29,21 @@ class TestCompbioAlgoEiga(unittest.TestCase):
     def testCmatrix(self):
         """
         """
-        eiga = Eiga([self.structures[0]])
-        eiga.cmatrices
+        eiga = Eiga.Protein(self.structures[0][0], self.structures[0][1], {'k': 4.0})
+        #print(eiga.cmatrices)
+        #for structure, eigvector in eiga.eigvectors.items():
+        #    print(eigvector.diagonal())
     
     def testCoords(self):
         """
         """
-        Eiga.coords(self.structures[0][0], self.structures[0][1])
+        #Eiga.coords(self.structures[0][0], self.structures[0][1])
     
     def testDmatrix(self):
         """
         """
-        coords = Eiga.coords(self.structures[0][0], self.structures[0][1])
-        Eiga.dmatrix(coords)
+        #coords = Eiga.coords(self.structures[0][0], self.structures[0][1])
+        #Eiga.dmatrix(coords)
 
 
 if __name__ == "__main__":
