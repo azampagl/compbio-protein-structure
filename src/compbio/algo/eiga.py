@@ -42,7 +42,7 @@ class Eiga(object):
             
             structure = parser.get_structure(structure, file_name)
             
-            # Unsure how to process multiple models.
+            # Unsure how to process multiple structures.
             if len(structure.get_list()) > 1:
                 raise
             
