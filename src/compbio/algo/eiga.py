@@ -9,14 +9,49 @@ Yosi Shibberu and Allen Holder
 '''
 from Bio.PDB.PDBParser import PDBParser
 from math import sqrt
-from numpy import float, zeros
-from numpy.linalg import eig
+from numpy import diag, float, reshape, transpose, zeros
+from numpy.linalg import det, eig, svd
 from scipy.spatial.distance import cdist
+
+import pprint
+import sys
 
 class Eiga(object):
     """
     EIGA.
     """
+    
+    # Contact matrix cutoff threshold.
+    cutoff = 8.0
+    
+    @staticmethod
+    def align(protein1, protein2):
+        """
+        Calculates the score between two proteins.
+        
+        Key arguments:
+        protein1 -- the first protein.
+        protein2 -- the second protein.
+        """
+        fingerprint1 = protein1.fingerprint
+        fingerprint2 = protein2.fingerprint
+        
+        rows = len(fingerprint1)
+        cols = len(fingerprint2)
+        
+        matrix = zeros((rows, cols), dtype=float)
+        
+        print(fingerprint1)
+        print(fingerprint2)
+        # Compute the score matrix of the vectors.
+        for i in range(rows):
+            for j in range(cols):
+                #print(abs(fingerprint1[i] - fingerprint2[j]))
+                matrix[i][j] = abs(fingerprint1[i] - fingerprint2[j])
+        
+        # Preprocess the matrix
+        #pprint.pprint(matrix)
+        
     
     class Protein(object):
         """
@@ -67,7 +102,7 @@ class Eiga(object):
             
             return coords
         
-        def __init__(self, structure, file_name, opts=None):
+        def __init__(self, structure, file_name):
             """
             Initializes a protein.
             
@@ -85,10 +120,39 @@ class Eiga(object):
             dmatrix = cdist(coords, coords)
             
             # Create the contact matrix.
-            cmatrix = self.cmatrix(dmatrix, opts['k'])
+            cmatrix = self.cmatrix(dmatrix)
+            
+            #pprint.pprint(cmatrix)
+            #sys.exit(0)
             
             # Find the eigvalues and eigvectors of the contact matrix.
             eigvalues, eigvectors = eig(cmatrix)
+            eigvectors = reshape(eigvectors, order='F')
+            eigvalues = sorted(eigvalues, reverse=True)
+            print(eigvalues)
+            sys.exit(0)
+            # Find our intrinsic contact coords.
+            r = (diag(eigvalues) ** 0.5) * transpose(eigvectors)
+            #print(diag(eigvalues))
+            #print("")
+            #print(eigvectors)
+            
+            #print(det(cmatrix))
+            #print("")
+            #print("")
+            #print(eigvectors * transpose(eigvectors))
+            #print(eigvectors * diag(eigvalues) * transpose(eigvectors))
+            #print(det(eigvectors) * det(diag(eigvalues)) * det(transpose(eigvectors)))
+            #r = sqrt(eigvalues)
+            #print(r)
+            sys.exit(0)
+            #print(eigvalues)
+            
+            #u, s, _ = svd(cmatrix)
+            
+            #pprint.pprint(eigvalues)
+            #pprint.pprint(diag(u))
+            #sys.exit(0)
             
             # For each residue, we want to assign the "best"
             #  eigenvalue.
@@ -109,26 +173,28 @@ class Eiga(object):
                 self.fingerprint.append(max_value)
             
             print(self.fingerprint)
+            print("")
+            print("")
+            #print(self.fingerprint)
         
-        def cmatrix(self, dmatrix, k):
+        def cmatrix(self, dmatrix):
             """
             Creates a contact matrix.
             
             Key arguments:
             dmatrix -- distance matrix
-            k       -- cutoff threshold
             """
             l = len(dmatrix)
             rows = cols = range(l)
             
-            ik = 1 / k
+            ik = 1 / Eiga.cutoff
             
             cmatrix = zeros((l, l), dtype=float)
             
             for i in rows:
                 for j in cols:
                     value = dmatrix[i][j]
-                    if value >= 0.0 and value <= k:
+                    if value >= 0.0 and value <= Eiga.cutoff:
                         cmatrix[i][j] = 1 - ik * value
             
             return cmatrix

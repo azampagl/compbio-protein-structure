@@ -9,12 +9,13 @@ from compbio.algo.eiga import Eiga
 
 class TestCompbioAlgoEiga(unittest.TestCase):
     
-    # Eiga class.
-    eiga = None
-    
-    # Structures to test.
-    structures = [("d1a04a2", "../../../../data/ent/d1a04a2.ent"),
-                  ("d1axib2", "../../../../data/ent/d1axib2.ent")]
+    # Proteins to test
+    skolnick = {
+                'flavodxin-like': [("d1b00a_", "../../../../data/ent/d1b00a_.ent"),
+                                   ("d1dbwa_", "../../../../data/ent/d1dbwa_.ent")],
+                
+                'cupredoxin-like': [("d1bawa_", "../../../../data/ent/d1bawa_.ent")],
+                }
     
     def setUp(self):
         """
@@ -26,10 +27,24 @@ class TestCompbioAlgoEiga(unittest.TestCase):
         """
         pass
     
+    def testAlign(self):
+        """
+        """
+        #for fold, proteins in self.skolnick.items():
+        #    for i in range(proteins):
+        proteins1 = self.skolnick['flavodxin-like']
+        proteins2 = self.skolnick['cupredoxin-like']
+        
+        protein1 = Eiga.Protein(proteins1[0][0], proteins1[0][1])
+        protein2 = Eiga.Protein(proteins2[0][0], proteins2[0][1])
+        
+        Eiga.align(protein1, protein2)
+        
     def testCmatrix(self):
         """
         """
-        eiga = Eiga.Protein(self.structures[0][0], self.structures[0][1], {'k': 4.0})
+        pass
+        #eiga = Eiga.Protein(self.structures[0][0], self.structures[0][1], {'k': 8.0})
         #print(eiga.cmatrices)
         #for structure, eigvector in eiga.eigvectors.items():
         #    print(eigvector.diagonal())
@@ -44,7 +59,6 @@ class TestCompbioAlgoEiga(unittest.TestCase):
         """
         #coords = Eiga.coords(self.structures[0][0], self.structures[0][1])
         #Eiga.dmatrix(coords)
-
 
 if __name__ == "__main__":
     unittest.main()
