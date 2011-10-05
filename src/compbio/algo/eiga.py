@@ -9,7 +9,7 @@ Yosi Shibberu and Allen Holder
 '''
 from Bio.PDB.PDBParser import PDBParser
 from math import sqrt
-from numpy import diag, float, reshape, transpose, zeros
+from numpy import array, arange, diag, dot, float, inner, matrix, transpose, zeros
 from numpy.linalg import det, eig, svd
 from scipy.spatial.distance import cdist
 
@@ -122,17 +122,69 @@ class Eiga(object):
             # Create the contact matrix.
             cmatrix = self.cmatrix(dmatrix)
             
-            #pprint.pprint(cmatrix)
-            #sys.exit(0)
+            # Test definition 1
+            #ei = zeros((1, len(cmatrix[0:])), dtype=float)[0]
+            #ei[0] = 1.0
+            #ej = zeros((1, len(cmatrix[0:])), dtype=float)[0]
+            #ej[1] = 1.0
+            #print inner(ei, inner(cmatrix, ej)) == cmatrix[0][1]
             
             # Find the eigvalues and eigvectors of the contact matrix.
-            eigvalues, eigvectors = eig(cmatrix)
-            eigvectors = reshape(eigvectors, order='F')
-            eigvalues = sorted(eigvalues, reverse=True)
-            print(eigvalues)
+            eigvectors, eigvalues, eigvectorsT = svd(cmatrix)
+            e2, v2 = eig(cmatrix)
+            
+            # Sort eigvalues with eigvectors from largest to smallest.
+            eigs = zip(e2, matrix(v2).transpose())
+            eigs.sort(reverse=True)
+            
+            e2 = [x[0] for x in eigs] 
+            v2 = matrix([x[1].tolist()[0] for x in eigs]).transpose()
+            
+            print(eigvectors)
+            print(v2)
+            #v2.sort()
+            
+            #print(eigvectors)
+            #print(v2)
+            #print(eigvectors[0][:])
+            #print(eigvectorsT[:][0])
+            
+            # Check SVD decomposition
+            #c = dot(eigvectors, dot(diag(eigvalues), eigvectorsT))
+            #print abs(cmatrix - c) < (1 ** -15)
             sys.exit(0)
-            # Find our intrinsic contact coords.
-            r = (diag(eigvalues) ** 0.5) * transpose(eigvectors)
+            
+            # Sort eigvalues with eigvectors from largest to smallest.
+            eigs = zip(eigvalues, matrix(eigvectorsT))
+            eigs.sort(reverse=True)
+            
+            eigvalues = [x[0] for x in eigs] 
+            eigvectors = matrix([x[1].tolist()[0] for x in eigs]).transpose()
+            
+            del eigs
+            
+            # Calculate r
+            r = (diag(eigvalues) ** 0.5) * eigvectors.transpose()
+            
+            ri = r[0][:]
+            rj = r[:][0]
+            print inner(ri, rj)
+                    
+            #print(cmatrix[0][:])
+            #print(ei0.transpose())
+            
+            
+            
+            #print (cmatrix[0:][0])            
+            #print inner(e0, inner(cmatrix, cmatrix[0:][0]))
+            
+            #print(cmatrix[0][0])
+            
+            #print()
+            #print 
+            
+            #print(eigvalues)
+            sys.exit(0)
             #print(diag(eigvalues))
             #print("")
             #print(eigvectors)
