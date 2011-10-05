@@ -149,65 +149,22 @@ class Eiga(object):
             #ri = inner(r, ei).transpose()
             #rj = inner(r, ej)
             #print(abs(inner(ri, rj) - cmatrix[i][j]) < (1 ** -15))
-                    
-            #print(cmatrix[0][:])
-            #print(ei0.transpose())
-            
-            
-            
-            #print (cmatrix[0:][0])            
-            #print inner(e0, inner(cmatrix, cmatrix[0:][0]))
-            
-            #print(cmatrix[0][0])
-            
-            #print()
-            #print 
-            
-            #print(eigvalues)
-            sys.exit(0)
-            #print(diag(eigvalues))
-            #print("")
-            #print(eigvectors)
-            
-            #print(det(cmatrix))
-            #print("")
-            #print("")
-            #print(eigvectors * transpose(eigvectors))
-            #print(eigvectors * diag(eigvalues) * transpose(eigvectors))
-            #print(det(eigvectors) * det(diag(eigvalues)) * det(transpose(eigvectors)))
-            #r = sqrt(eigvalues)
-            #print(r)
-            sys.exit(0)
-            #print(eigvalues)
-            
-            #u, s, _ = svd(cmatrix)
-            
-            #pprint.pprint(eigvalues)
-            #pprint.pprint(diag(u))
-            #sys.exit(0)
-            
+                       
             # For each residue, we want to assign the "best"
             #  eigenvalue.
             #
             # @see section 3.1 of the report
             for j in range(len(coords)):
                 
-                # Init our max value and max angle
+                max_index = None
                 max_value = None
-                max_angle = None
                 
-                for i in range(len(eigvalues)):
-                    angle = sqrt(eigvalues[i]) * abs(eigvectors[i][j])
-                    if angle > max_angle:
-                        max_value = eigvalues[i]
-                        max_angle = angle
+                for i in range(len(r[:][0])):
+                    if (r[i][j] > max_value):
+                        max_index = i
+                        max_value = r[i][j]
                 
-                self.fingerprint.append(max_value)
-            
-            print(self.fingerprint)
-            print("")
-            print("")
-            #print(self.fingerprint)
+                self.fingerprint.append(eigvalues[max_index]))
         
         def cmatrix(self, dmatrix):
             """
