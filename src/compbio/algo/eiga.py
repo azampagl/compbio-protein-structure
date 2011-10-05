@@ -127,48 +127,28 @@ class Eiga(object):
             #ei[0] = 1.0
             #ej = zeros((1, len(cmatrix[0:])), dtype=float)[0]
             #ej[1] = 1.0
-            #print inner(ei, inner(cmatrix, ej)) == cmatrix[0][1]
+            #print(inner(ei, inner(cmatrix, ej)) == cmatrix[0][1])
             
             # Find the eigvalues and eigvectors of the contact matrix.
             eigvectors, eigvalues, eigvectorsT = svd(cmatrix)
-            e2, v2 = eig(cmatrix)
-            
-            # Sort eigvalues with eigvectors from largest to smallest.
-            eigs = zip(e2, matrix(v2).transpose())
-            eigs.sort(reverse=True)
-            
-            e2 = [x[0] for x in eigs] 
-            v2 = matrix([x[1].tolist()[0] for x in eigs]).transpose()
-            
-            print(eigvectors)
-            print(v2)
-            #v2.sort()
-            
-            #print(eigvectors)
-            #print(v2)
-            #print(eigvectors[0][:])
-            #print(eigvectorsT[:][0])
             
             # Check SVD decomposition
             #c = dot(eigvectors, dot(diag(eigvalues), eigvectorsT))
-            #print abs(cmatrix - c) < (1 ** -15)
-            sys.exit(0)
-            
-            # Sort eigvalues with eigvectors from largest to smallest.
-            eigs = zip(eigvalues, matrix(eigvectorsT))
-            eigs.sort(reverse=True)
-            
-            eigvalues = [x[0] for x in eigs] 
-            eigvectors = matrix([x[1].tolist()[0] for x in eigs]).transpose()
-            
-            del eigs
+            #print(abs(cmatrix - c) < (1 ** -15))
             
             # Calculate r
-            r = (diag(eigvalues) ** 0.5) * eigvectors.transpose()
+            r = dot((diag(eigvalues) ** 0.5), eigvectorsT)
             
-            ri = r[0][:]
-            rj = r[:][0]
-            print inner(ri, rj)
+            # Test proof 2
+            #i = 0
+            #j = 0
+            #ei = zeros((1, len(cmatrix[0:])), dtype=float)[0]
+            #ei[i] = 1.0
+            #ej = zeros((1, len(cmatrix[0:])), dtype=float)[0]
+            #ej[j] = 1.0
+            #ri = inner(r, ei).transpose()
+            #rj = inner(r, ej)
+            #print(abs(inner(ri, rj) - cmatrix[i][j]) < (1 ** -15))
                     
             #print(cmatrix[0][:])
             #print(ei0.transpose())
