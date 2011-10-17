@@ -8,8 +8,8 @@ Yosi Shibberu and Allen Holder
 @copyright MIT
 '''
 from Bio.PDB.PDBParser import PDBParser
-from math import sqrt
-from numpy import array, arange, diag, dot, float, inner, matrix, transpose, zeros
+from numpy import array, arange, diag, dot, empty
+from numpy import float, inner, transpose, vectorize, zeros
 from numpy.linalg import det, eig, svd
 from scipy.spatial.distance import cdist
 
@@ -33,34 +33,72 @@ class Eiga(object):
         protein1 -- the first protein.
         protein2 -- the second protein.
         """
+        
+        class __Node():
+            """
+            Node of the DP matrix.
+            """
+            # Backpointer to the previous node.
+            prev = None
+            
+            # Score at the current node.
+            score = None
+            
+            # Value at this node.
+            value = None
+            
+            def __init__(self, value):
+                """
+                Initializes the value during initialization.
+                
+                Key arguments:
+                value -- the value for this node.
+                """
+                self.value = value
+        
         fingerprint1 = protein1.fingerprint
         fingerprint2 = protein2.fingerprint
         
         rows = len(fingerprint1)
         cols = len(fingerprint2)
         
-        matrix = zeros((rows, cols), dtype=float)
+        #Build a matrix full of Prefix objects
+        vnode = vectorize(__Node)
+        matrix = empty((rows, cols), dtype=object)
         
-        print(fingerprint1)
-        print(fingerprint2)
-        # Compute the score matrix of the vectors.
+        # Initialize the matrix.
         for i in range(rows):
             for j in range(cols):
-                #print(abs(fingerprint1[i] - fingerprint2[j]))
-                matrix[i][j] = abs(fingerprint1[i] - fingerprint2[j])
+                matrix[i][j] = vnode(abs(fingerprint1[i] - fingerprint2[j]))
+        
+        # Initialize the scroe for the first row and column.
+        for i in range(rows):
+            matrix[i][0].score = matrix[i][0].value
+        for j in range(cols):
+            matrix[0][j].score = matrix[0][j].value
+            
+        # Determine score using DP.
+        for i in range(1, rows):
+            for j in range(1, cols):
+                # Current node.
+                current = matrix[i][j]
+                # Find the previous top, diag, and left scores
+                top = matrix[i - 1][j]
+                diag = matrix[i - 1][j - 1]
+                left = matrix[i][j - 1]
         
         # Preprocess the matrix
-        #pprint.pprint(matrix)
+        pprint.pprint(matrix)
         
-    
     class Protein(object):
         """
         Protein
         """
         
+        # Name of the protein.
         name = ""
         
-        #
+        # Fingerprint of the protein
         fingerprint = []
         
         @staticmethod
@@ -110,6 +148,9 @@ class Eiga(object):
             structures -- structure tuple that contains the structure name and the .ent
                           file location.
             """
+            # Initialize fingerprint.
+            self.fingerprint = []
+            
             # Set the protein name.
             self.name = structure
             
@@ -164,8 +205,8 @@ class Eiga(object):
                         max_index = i
                         max_value = r[i][j]
                 
-                self.fingerprint.append(eigvalues[max_index]))
-        
+                self.fingerprint.append(eigvalues[max_index])
+            
         def cmatrix(self, dmatrix):
             """
             Creates a contact matrix.

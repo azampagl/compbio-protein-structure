@@ -1,6 +1,8 @@
 '''
 Unit tests for the EIGA class.
 
+@see http://astral.berkeley.edu/pdbstyle-1.75.html
+
 @author Aaron Zampaglione <azapagl@azampagl.com>
 '''
 import unittest
@@ -15,6 +17,8 @@ class TestCompbioAlgoEiga(unittest.TestCase):
                                    ("d1dbwa_", "../../../../data/ent/d1dbwa_.ent")],
                 
                 'cupredoxin-like': [("d1bawa_", "../../../../data/ent/d1bawa_.ent")],
+                
+                'tim-beta': [("d1amka_", "../../../../data/ent/d1amka_.ent")],
                 }
     
     def setUp(self):
@@ -34,9 +38,12 @@ class TestCompbioAlgoEiga(unittest.TestCase):
         #    for i in range(proteins):
         proteins1 = self.skolnick['flavodxin-like']
         proteins2 = self.skolnick['cupredoxin-like']
+        proteins3 = self.skolnick['tim-beta']
         
         protein1 = Eiga.Protein(proteins1[0][0], proteins1[0][1])
-        protein2 = Eiga.Protein(proteins2[0][0], proteins2[0][1])
+        protein2 = Eiga.Protein(proteins1[1][0], proteins1[1][1])
+        protein3 = Eiga.Protein(proteins2[0][0], proteins2[0][1])
+        protein4 = Eiga.Protein(proteins3[0][0], proteins3[0][1])
         
         Eiga.align(protein1, protein2)
         
