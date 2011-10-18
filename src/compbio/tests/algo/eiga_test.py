@@ -46,6 +46,9 @@ class TestCompbioAlgoEiga(unittest.TestCase):
         protein4 = Eiga.Protein(proteins3[0][0], proteins3[0][1])
         
         Eiga.align(protein1, protein2)
+        Eiga.align(protein2, protein3)
+        Eiga.align(protein2, protein4)
+        Eiga.align(protein3, protein4)
         
     def testCmatrix(self):
         """

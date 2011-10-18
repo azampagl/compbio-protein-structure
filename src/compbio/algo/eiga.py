@@ -34,28 +34,32 @@ class Eiga(object):
         protein2 -- the second protein.
         """
         
-        class __Node():
+        class __Node(object):
             """
             Node of the DP matrix.
             """
-            # Backpointer to the previous node.
+            # Backpointer.
             prev = None
             
             # Score at the current node.
-            score = None
+            score = 0.0
             
-            # Value at this node.
-            value = None
+            # First index.
+            index1 = None
             
-            def __init__(self, value):
+            # Second index.
+            index2 = None
+            
+            def __init__(self):
                 """
-                Initializes the value during initialization.
-                
-                Key arguments:
-                value -- the value for this node.
+                Initializes the node.
                 """
-                self.value = value
+                self.prev = None
+                self.score = 0.0
+                self.index1 = None
+                self.index2 = None
         
+        # Quick reference the protein fingerprints.
         fingerprint1 = protein1.fingerprint
         fingerprint2 = protein2.fingerprint
         
@@ -63,32 +67,52 @@ class Eiga(object):
         cols = len(fingerprint2)
         
         #Build a matrix full of Prefix objects
-        vnode = vectorize(__Node)
         matrix = empty((rows, cols), dtype=object)
-        
         # Initialize the matrix.
         for i in range(rows):
             for j in range(cols):
-                matrix[i][j] = vnode(abs(fingerprint1[i] - fingerprint2[j]))
-        
-        # Initialize the scroe for the first row and column.
-        for i in range(rows):
-            matrix[i][0].score = matrix[i][0].value
-        for j in range(cols):
-            matrix[0][j].score = matrix[0][j].value
+                matrix[i][j] = __Node()
             
         # Determine score using DP.
         for i in range(1, rows):
-            for j in range(1, cols):
-                # Current node.
-                current = matrix[i][j]
-                # Find the previous top, diag, and left scores
+            for j in range(1, cols):                
+                # Find the previous top, diag, and left components.
                 top = matrix[i - 1][j]
                 diag = matrix[i - 1][j - 1]
                 left = matrix[i][j - 1]
+                
+                # Find the scores.
+                top_score = top.score + abs(fingerprint1[i - 1] - fingerprint2[j]) + 1.0
+                diag_score = diag.score + abs(fingerprint1[i - 1] - fingerprint2[j - 1])
+                left_score = left.score + abs(fingerprint1[i] - fingerprint2[j - 1]) + 1.0
+                
+                # Top
+                if (top_score <= diag_score and top_score <= left_score):
+                    matrix[i][j].prev = top
+                    matrix[i][j].score = top_score
+                    matrix[i][j].index1 = i - 1
+                # Diagonal
+                elif (diag_score <= top_score and diag_score <= left_score):
+                    matrix[i][j].prev = diag
+                    matrix[i][j].score = diag_score
+                    matrix[i][j].index1 = i - 1
+                    matrix[i][j].index2 = j - 1
+                # Left
+                else:
+                    matrix[i][j].prev = left
+                    matrix[i][j].score = left_score
+                    matrix[i][j].index2 = j - 1
         
-        # Preprocess the matrix
-        pprint.pprint(matrix)
+        # Follow the pointers backwards to rebuild the globally aligned sequences.
+        s1 = []
+        s2 = []
+        node = matrix[-1][-1]
+        while node.prev != None:
+            s1.insert(0, node.index1)
+            s2.insert(0, node.index2)
+            node = node.prev
+        
+        print(matrix[-1][-1].score)
         
     class Protein(object):
         """
