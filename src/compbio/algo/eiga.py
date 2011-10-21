@@ -8,13 +8,9 @@ Yosi Shibberu and Allen Holder
 @copyright MIT
 '''
 from Bio.PDB.PDBParser import PDBParser
-from numpy import array, arange, diag, dot, empty
-from numpy import float, inner, transpose, vectorize, zeros
-from numpy.linalg import det, eig, svd
+from numpy import diag, dot, empty, float, zeros
+from numpy.linalg import svd
 from scipy.spatial.distance import cdist
-
-import pprint
-import sys
 
 class Eiga(object):
     """
@@ -44,11 +40,11 @@ class Eiga(object):
             # Score at the current node.
             score = 0.0
             
-            # First index.
-            index1 = None
+            # Indices of protein 1
+            indices1 = None
             
-            # Second index.
-            index2 = None
+            # Indices of protein 2
+            indices2 = None
             
             def __init__(self):
                 """
@@ -56,8 +52,8 @@ class Eiga(object):
                 """
                 self.prev = None
                 self.score = 0.0
-                self.index1 = None
-                self.index2 = None
+                self.indices1 = None
+                self.indices2 = None
         
         # Quick reference the protein fingerprints.
         fingerprint1 = protein1.fingerprint
@@ -90,29 +86,29 @@ class Eiga(object):
                 if (top_score <= diag_score and top_score <= left_score):
                     matrix[i][j].prev = top
                     matrix[i][j].score = top_score
-                    matrix[i][j].index1 = i - 1
+                    matrix[i][j].indices1 = i - 1
                 # Diagonal
                 elif (diag_score <= top_score and diag_score <= left_score):
                     matrix[i][j].prev = diag
                     matrix[i][j].score = diag_score
-                    matrix[i][j].index1 = i - 1
-                    matrix[i][j].index2 = j - 1
+                    matrix[i][j].indices1 = i - 1
+                    matrix[i][j].indices2 = j - 1
                 # Left
                 else:
                     matrix[i][j].prev = left
                     matrix[i][j].score = left_score
-                    matrix[i][j].index2 = j - 1
+                    matrix[i][j].indices2 = j - 1
         
         # Follow the pointers backwards to rebuild the globally aligned sequences.
         s1 = []
         s2 = []
         node = matrix[-1][-1]
         while node.prev != None:
-            s1.insert(0, node.index1)
-            s2.insert(0, node.index2)
+            s1.insert(0, node.indices1)
+            s2.insert(0, node.indices2)
             node = node.prev
         
-        print(matrix[-1][-1].score)
+        return matrix[-1][-1].score, s1, s2
         
     class Protein(object):
         """
@@ -195,7 +191,7 @@ class Eiga(object):
             #print(inner(ei, inner(cmatrix, ej)) == cmatrix[0][1])
             
             # Find the eigvalues and eigvectors of the contact matrix.
-            eigvectors, eigvalues, eigvectorsT = svd(cmatrix)
+            _, eigvalues, eigvectorsT = svd(cmatrix)
             
             # Check SVD decomposition
             #c = dot(eigvectors, dot(diag(eigvalues), eigvectorsT))

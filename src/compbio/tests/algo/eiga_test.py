@@ -36,19 +36,20 @@ class TestCompbioAlgoEiga(unittest.TestCase):
         """
         #for fold, proteins in self.skolnick.items():
         #    for i in range(proteins):
-        proteins1 = self.skolnick['flavodxin-like']
-        proteins2 = self.skolnick['cupredoxin-like']
-        proteins3 = self.skolnick['tim-beta']
+        family1 = self.skolnick['flavodxin-like']
+        family2 = self.skolnick['cupredoxin-like']
         
-        protein1 = Eiga.Protein(proteins1[0][0], proteins1[0][1])
-        protein2 = Eiga.Protein(proteins1[1][0], proteins1[1][1])
-        protein3 = Eiga.Protein(proteins2[0][0], proteins2[0][1])
-        protein4 = Eiga.Protein(proteins3[0][0], proteins3[0][1])
+        protein1_1 = Eiga.Protein(family1[0][0], family1[0][1])
+        protein1_2 = Eiga.Protein(family1[1][0], family1[1][1])
         
-        Eiga.align(protein1, protein2)
-        Eiga.align(protein2, protein3)
-        Eiga.align(protein2, protein4)
-        Eiga.align(protein3, protein4)
+        protein2_1 = Eiga.Protein(family2[0][0], family2[0][1])
+        
+        
+        print(str(family1[0][0]) + " " + str(family1[1][0]))
+        print(Eiga.align(protein1_1, protein1_2))
+        print("")
+        print(str(family1[0][0]) + " " + str(family2[0][0]))
+        print(Eiga.align(protein1_1, protein2_1))
         
     def testCmatrix(self):
         """
