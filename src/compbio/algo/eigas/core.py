@@ -1,20 +1,24 @@
-'''
-Python implementation of the EIGA algorithm.
+"""
+Python implementation of the EIGAs algorithm.
 
 A Spectral Approach to Protein Structure Alignment
 Yosi Shibberu and Allen Holder
 
-@author Aaron Zampaglione <azampagl@azapagl.com>
-@copyright MIT
-'''
+@author Aaron Zampaglione <azampagl@azampagl.com>
+@package EIGAs
+@copyright 2011 (c) Aaron Zampaglione
+@license MIT
+"""
 from Bio.PDB.PDBParser import PDBParser
 from numpy import diag, dot, empty, float, zeros
 from numpy.linalg import svd
 from scipy.spatial.distance import cdist
 
-class Eiga(object):
+from exception import EIGAsException
+
+class EIGAs(object):
     """
-    EIGA.
+    EIGAs.
     """
     
     # Contact matrix cutoff threshold.
@@ -109,7 +113,32 @@ class Eiga(object):
             node = node.prev
         
         return matrix[-1][-1].score, s1, s2
+    
+    @staticmethod
+    def aligned(protein1=None, protein2=None, seq1=None, seq2=None):
+        """
+        Counts the number of aligned items.
         
+        Either both proteins OR both sequences must be provided.
+        
+        Key arguments:
+        protein1 -- first protein. [optional]
+        protein2 -- second protein. [optional]
+        seq1     -- first sequence. [optional]
+        seq2     -- second sequence. [optional]
+        """
+        aligned = 0
+        
+        # Align the proteins if the sequences weren't provided.
+        if not seq1 or not seq2:
+            _, seq1, seq2 = EIGAs.align(protein1, protein2)
+        
+        for i in range(len(seq1)):
+            if seq1[i] and seq2[i]:
+                aligned += 1
+        
+        return aligned
+    
     class Protein(object):
         """
         Protein
@@ -120,45 +149,6 @@ class Eiga(object):
         
         # Fingerprint of the protein
         fingerprint = []
-        
-        @staticmethod
-        def coords(structure, file_name):
-            """
-            Parses a pdb-format file and returns a list of coordinates.
-            
-            Key arguments:
-            structure -- the structure's id 
-            file_name -- the location of the .ent file.
-            """
-            # Build parse object.
-            parser = PDBParser()
-            
-            structure = parser.get_structure(structure, file_name)
-            
-            # Unsure how to process multiple structures.
-            if len(structure.get_list()) > 1:
-                raise
-            
-            model = structure.get_list()[0]
-            
-            # Unsure how to process multiple models.
-            if len(model.get_list()) > 1:
-                raise
-            
-            # The chain contains a list of residues.
-            chain = model.get_list()[0]
-            
-            # Keep track of the alpha carbon coordinates.
-            coords = []
-            
-            for residue in chain:
-                for atom in residue:
-                    # We're only looking at the primary carbon atom.
-                    if atom.get_name() == "C":
-                        coord = atom.get_coord()
-                        coords.append((coord[0], coord[1], coord[2]))
-            
-            return coords
         
         def __init__(self, structure, file_name):
             """
@@ -175,7 +165,7 @@ class Eiga(object):
             self.name = structure
             
             # Find the atomic coordinates from the pdb-format file.
-            coords = Eiga.Protein.coords(structure, file_name)
+            coords = self.coords(file_name)
             
             # Calculate distance matrix
             dmatrix = cdist(coords, coords)
@@ -237,14 +227,51 @@ class Eiga(object):
             l = len(dmatrix)
             rows = cols = range(l)
             
-            ik = 1 / Eiga.cutoff
+            ik = 1 / EIGAs.cutoff
             
             cmatrix = zeros((l, l), dtype=float)
             
             for i in rows:
                 for j in cols:
                     value = dmatrix[i][j]
-                    if value >= 0.0 and value <= Eiga.cutoff:
+                    if value >= 0.0 and value <= EIGAs.cutoff:
                         cmatrix[i][j] = 1 - ik * value
             
             return cmatrix
+        
+        def coords(self, file_name):
+            """
+            Parses a pdb-format file and returns a list of coordinates.
+            
+            Key arguments:
+            file_name -- the location of the .ent file.
+            """
+            # Build parse object.
+            parser = PDBParser()
+            
+            structure = parser.get_structure(self.name, file_name)
+            
+            # Unsure how to process multiple structures.
+            if len(structure.get_list()) != 1:
+                raise EIGAsException("Error reading structure for '" + self.name + '"')
+            
+            model = structure.get_list()[0]
+            
+            # Unsure how to process multiple models.
+            if len(model.get_list()) != 1:
+                raise EIGAsException("Error reading model for '" + self.name + '"')
+            
+            # The chain contains a list of residues.
+            chain = model.get_list()[0]
+            
+            # Keep track of the alpha carbon coordinates.
+            coords = []
+            
+            for residue in chain:
+                for atom in residue:
+                    # We're only looking at the primary carbon atom.
+                    if atom.get_name() == "C":
+                        coord = atom.get_coord()
+                        coords.append((coord[0], coord[1], coord[2]))
+            
+            return coords
