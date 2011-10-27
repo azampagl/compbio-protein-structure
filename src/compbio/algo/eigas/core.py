@@ -270,7 +270,7 @@ class EIGAs(object):
             for residue in chain:
                 for atom in residue:
                     # We're only looking at the primary carbon atom.
-                    if atom.get_name() == "C":
+                    if atom.get_name() == 'CA':
                         coord = atom.get_coord()
                         coords.append((coord[0], coord[1], coord[2]))
             
