@@ -1,12 +1,13 @@
-'''
+"""
 Scapes PDB database for skolnick data set.
 
 @see http://astral.berkeley.edu/pdbstyle-1.75.html
 @see ./README.txt
 
 @author Aaron Zampaglione <azampagl@my.fit.edu>
-@date 2011-10-27
-'''
+@copyright 2011 (c) Aaron Zampaglione
+@license MIT
+"""
 import os
 import sys
 import time
@@ -42,14 +43,14 @@ readme.close()
 
 # Create directories.
 for fold in skolnick.keys():
-    if os.path.exists(fold):
-        os.removedirs(fold)
-    os.mkdir(fold)
+    if os.path.exists(EXT + '/' + fold):
+        os.removedirs(EXT + '/' + fold)
+    os.mkdir(EXT + '/' + fold)
 
 for fold, proteins in skolnick.items():
     for protein in proteins:
         result = urllib.urlopen(BASE_URL + protein)
-        ent = open(fold + '/' + protein + '.' + EXT, 'w')
+        ent = open(EXT + '/' + fold + '/' + protein + '.' + EXT, 'w')
         ent.write(result.read())
         ent.close()
         time.sleep(2)
