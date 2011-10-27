@@ -49,8 +49,11 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
         """
         """
         for protein_pair in self.protein_pairs:
-            print(protein_pair[0].name + ' vs. ' + protein_pair[1].name + ': ' + \
-                  str(EIGAs.aligned(protein1=protein_pair[0], protein2=protein_pair[1])))
+            protein1 = protein_pair[0]
+            protein2 = protein_pair[1]
+            print(protein1.name + ' (' + str(len(protein1.fingerprint)) + ')' +  ' vs. ' + \
+                  protein1.name + ' (' + str(len(protein2.fingerprint)) + ')' + ': ' + \
+                  str(EIGAs.aligned(protein1=protein1, protein2=protein2)))
 
 if __name__ == "__main__":
     unittest.main()
