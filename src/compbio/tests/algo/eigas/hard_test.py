@@ -23,7 +23,8 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
     
     # Folds to test.
     PROTEIN_PAIRS = [(('d1fxia_', DATA_DIR + '/d1fxia_.ent'), ('d1ubqa_', DATA_DIR + '/d1ubqa_.ent')), # 1.
-                     (('d1crla_', DATA_DIR + '/d1crla_.ent'), ('d1edea_', DATA_DIR + '/d1edea_.ent'))] # 7.
+                     (('d1crla_', DATA_DIR + '/d1crla_.ent'), ('d1edea_', DATA_DIR + '/d1edea_.ent')),
+                     (('d1fxia_', DATA_DIR + '/d1fxia_.ent'), ('d1fxia_', DATA_DIR + '/d1fxia_.ent'))] # 7.
     
     # Store Protein objects.
     protein_pairs = []
@@ -51,9 +52,13 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
         for protein_pair in self.protein_pairs:
             protein1 = protein_pair[0]
             protein2 = protein_pair[1]
+            score, seq1, seq2 = EIGAs.align(protein1, protein2)
             print(protein1.name + ' (' + str(len(protein1.fingerprint)) + ')' +  ' vs. ' + \
-                  protein1.name + ' (' + str(len(protein2.fingerprint)) + ')' + ': ' + \
-                  str(EIGAs.aligned(protein1=protein1, protein2=protein2)))
+                  protein2.name + ' (' + str(len(protein2.fingerprint)) + ')' + ': ' + \
+                  str(EIGAs.aligned(seq1=seq1, seq2=seq2)))
+            print(seq1)
+            print(seq2)
+            print('')
 
 if __name__ == "__main__":
     unittest.main()

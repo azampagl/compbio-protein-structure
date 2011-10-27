@@ -11,8 +11,8 @@ Unit tests for the EIGA class.
 import os
 import unittest
 
-from compbio.algo.eiga.core import EIGA
-from compbio.algo.eiga.exception import EIGAException
+from compbio.algo.eigas.core import EIGAs
+from compbio.algo.eigas.exception import EIGAsException
 
 class TestCompbioAlgoEIGA(unittest.TestCase):
     
@@ -39,8 +39,8 @@ class TestCompbioAlgoEIGA(unittest.TestCase):
             self.skolnick[fold] = []
             for ent in os.listdir(data_dir + '/' + fold):
                 try:
-                    self.skolnick[fold].append(EIGA.Protein(ent[:-4], data_dir + '/' + fold + '/' + ent))
-                except EIGAException as e:
+                    self.skolnick[fold].append(EIGAs.Protein(ent[:-4], data_dir + '/' + fold + '/' + ent))
+                except EIGAsException as e:
                     print(e)
         
     def tearDown(self):
@@ -57,7 +57,7 @@ class TestCompbioAlgoEIGA(unittest.TestCase):
                     for protein2 in self.skolnick[fold2]:
                         if protein1 != protein2:
                             print(protein1.name + ' (' + str(fold1) + ') vs. ' + protein2.name + ' (' + str(fold2) + ')')
-                            score, seq1, seq2, = EIGA.align(protein1, protein2)
+                            score, seq1, seq2, = EIGAs.align(protein1, protein2)
                             aligned = 0
                             #print(seq1)
                             #print(seq2)

@@ -1,5 +1,5 @@
 flavodxin-like
-1b00 d11b00a_
+1b00 d1b00a_
 1dbw d1dbwa_
 1nat d1nata_
 1ntr d1ntra_
@@ -36,7 +36,7 @@ tim_beta-alpha-barrel
 8tim d8tima_
 
 ferritin-like
-1b71 d1b71a_
+1b71 d1b71a1
 1bcf d1bcfa_
 1dps d1dpsa_
 1fha d1fhaa_

@@ -134,7 +134,7 @@ class EIGAs(object):
             _, seq1, seq2 = EIGAs.align(protein1, protein2)
         
         for i in range(len(seq1)):
-            if seq1[i] and seq2[i]:
+            if seq1[i] != None or seq2[i] != None:
                 aligned += 1
         
         return aligned
@@ -252,13 +252,13 @@ class EIGAs(object):
             structure = parser.get_structure(self.name, file_name)
             
             # Unsure how to process multiple structures.
-            if len(structure.get_list()) != 1:
+            if len(structure.get_list()) < 1:
                 raise EIGAsException("Error reading structure for '" + self.name + '"')
             
             model = structure.get_list()[0]
             
             # Unsure how to process multiple models.
-            if len(model.get_list()) != 1:
+            if len(model.get_list()) < 1:
                 raise EIGAsException("Error reading model for '" + self.name + '"')
             
             # The chain contains a list of residues.
