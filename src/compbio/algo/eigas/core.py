@@ -9,6 +9,8 @@ Yosi Shibberu and Allen Holder
 @copyright 2011 (c) Aaron Zampaglione
 @license MIT
 """
+from decimal import Decimal
+
 from Bio.PDB.PDBParser import PDBParser
 from numpy import diag, dot, empty, float, zeros
 from numpy.linalg import svd
@@ -72,6 +74,23 @@ class EIGAs(object):
         for i in range(rows):
             for j in range(cols):
                 matrix[i][j] = __Node()
+        
+        # Init first cell.
+        matrix[0][0].score = 0
+        matrix[0][0].indices1 = 0
+        matrix[0][0].indices2 = 0
+        
+        # Init first row.
+        for i in range(1, rows):
+            matrix[i][0].score = abs(fingerprint1[i] - fingerprint2[0])
+            matrix[i][0].indices1 = i
+            matrix[i][0].indices2 = 0
+    
+        # Init first col.
+        for i in range(1, cols):
+            matrix[0][i].score = abs(fingerprint1[0] - fingerprint2[i])
+            matrix[0][i].indices1 = 0
+            matrix[0][i].indices2 = i
             
         # Determine score using DP.
         for i in range(1, rows):
@@ -82,32 +101,33 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.score + abs(fingerprint1[i - 1] - fingerprint2[j]) + 1.0
-                diag_score = diag.score + abs(fingerprint1[i - 1] - fingerprint2[j - 1])
-                left_score = left.score + abs(fingerprint1[i] - fingerprint2[j - 1]) + 1.0
+                score = abs(fingerprint1[i] - fingerprint2[j])
+                top_score = top.score + score + 1.0
+                diag_score = diag.score + score
+                left_score = left.score + score + 1.0
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):
                     matrix[i][j].prev = top
                     matrix[i][j].score = top_score
-                    matrix[i][j].indices1 = i - 1
+                    matrix[i][j].indices1 = i
                 # Diagonal
                 elif (diag_score <= top_score and diag_score <= left_score):
                     matrix[i][j].prev = diag
                     matrix[i][j].score = diag_score
-                    matrix[i][j].indices1 = i - 1
-                    matrix[i][j].indices2 = j - 1
+                    matrix[i][j].indices1 = i
+                    matrix[i][j].indices2 = j
                 # Left
                 else:
                     matrix[i][j].prev = left
                     matrix[i][j].score = left_score
-                    matrix[i][j].indices2 = j - 1
+                    matrix[i][j].indices2 = j
         
         # Follow the pointers backwards to rebuild the globally aligned sequences.
         s1 = []
         s2 = []
         node = matrix[-1][-1]
-        while node.prev != None:
+        while node != None:
             s1.insert(0, node.indices1)
             s2.insert(0, node.indices2)
             node = node.prev
@@ -271,7 +291,7 @@ class EIGAs(object):
                 for atom in residue:
                     # We're only looking at the primary carbon atom.
                     if atom.get_name() == 'CA':
-                        coord = atom.get_coord()
-                        coords.append((coord[0], coord[1], coord[2]))
+                        coord = map(Decimal, (map(str, atom.get_coord())))
+                        coords.append(coord)
             
             return coords
