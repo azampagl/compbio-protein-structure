@@ -262,7 +262,7 @@ class EIGAs(object):
             file_name -- the location of the .ent file.
             """
             # Build parse object.
-            parser = PDBParser()
+            parser = PDBParser(QUIET=True)
             
             structure = parser.get_structure(self.name, file_name)
             
@@ -286,7 +286,6 @@ class EIGAs(object):
                 for atom in residue:
                     # We're only looking at the primary carbon atom.
                     if atom.get_name() == 'CA':
-                        coord = map(Decimal, (map(str, atom.get_coord())))
-                        coords.append(coord)
+                        coords.append(map(Decimal, (map(str, atom.get_coord()))))
             
             return coords
