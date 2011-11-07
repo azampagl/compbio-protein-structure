@@ -27,9 +27,9 @@ class EIGAs(object):
     cutoff = 8.0
     
     @staticmethod
-    def align(protein1, protein2):
+    def global_align(protein1, protein2):
         """
-        Calculates the score between two proteins.
+        Globally aligns two proteins.
         
         Key arguments:
         protein1 -- the first protein.

@@ -11,7 +11,6 @@ Unit tests for the EIGA class.
 import unittest
 
 from compbio.algo.eigas.core import EIGAs
-from compbio.algo.eigas.exception import EIGAsException
 
 class TestCompbioAlgoEIGAs(unittest.TestCase):
     
@@ -60,7 +59,7 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
         for protein_pair in self.protein_pairs:
             protein1 = protein_pair[0]
             protein2 = protein_pair[1]
-            score, seq1, seq2 = EIGAs.align(protein1, protein2)
+            score, seq1, seq2 = EIGAs.global_align(protein1, protein2)
             print(protein1.name + ' (' + str(len(protein1.fingerprint)) + ')' +  '\tvs.\t' + \
                   protein2.name + ' (' + str(len(protein2.fingerprint)) + ')' + ':\t' + \
                   str(EIGAs.aligned(seq1=seq1, seq2=seq2)))
