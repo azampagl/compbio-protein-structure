@@ -21,6 +21,13 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
     DATA_DIR = ROOT + '/data/hard/ent'
     
     # Folds to test.
+    
+    # .pdb style obtained from pdb.org
+    PROTEIN_PAIRS = [(('d1fxia_', DATA_DIR + '/d1fxia_.ent'), ('d1ubqa_', DATA_DIR + '/d1ubqa_.ent')), # 1.
+                     ]
+    
+    # .ent style obtained from berkley
+    '''
     PROTEIN_PAIRS = [(('d1fxia_', DATA_DIR + '/d1fxia_.ent'), ('d1ubqa_', DATA_DIR + '/d1ubqa_.ent')), # 1.
                      (('d1tena_', DATA_DIR + '/d1tena_.ent'), ('d3hhrb1', DATA_DIR + '/d3hhrb1.ent')), # 2.
                      (('d3hlab_', DATA_DIR + '/d3hlab_.ent'), ('d2rhea_', DATA_DIR + '/d2rhea_.ent')), # 3.
@@ -32,6 +39,7 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
                      (('d1bgeb_', DATA_DIR + '/d1bgeb_.ent'), ('d2gmfa_', DATA_DIR + '/d2gmfa_.ent')), # 9..
                      (('d1tiea_', DATA_DIR + '/d1tiea_.ent'), ('d4fgfa_', DATA_DIR + '/d4fgfa_.ent')), # 10.
                      ]
+    '''
     
     # Store Protein objects.
     protein_pairs = []
