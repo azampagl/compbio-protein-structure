@@ -75,19 +75,14 @@ class EIGAs(object):
             for j in range(cols):
                 matrix[i][j] = __Node()
         
-        # Init first cell.
-        matrix[0][0].score = 0
-        matrix[0][0].indices1 = 0
-        matrix[0][0].indices2 = 0
-        
         # Init first row.
-        for i in range(1, rows):
+        for i in range(rows):
             matrix[i][0].score = abs(fingerprint1[i] - fingerprint2[0])
             matrix[i][0].indices1 = i
             matrix[i][0].indices2 = 0
     
         # Init first col.
-        for i in range(1, cols):
+        for i in range(cols):
             matrix[0][i].score = abs(fingerprint1[0] - fingerprint2[i])
             matrix[0][i].indices1 = 0
             matrix[0][i].indices2 = i
