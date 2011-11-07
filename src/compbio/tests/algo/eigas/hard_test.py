@@ -11,6 +11,8 @@ Unit tests for the EIGA class.
 import unittest
 
 from compbio.algo.eigas.core import EIGAs
+from compbio.algo.eigas.protein.core import Protein
+from compbio.algo.eigas.protein.parser.core import ProteinParser
 
 class TestCompbioAlgoEIGAsHard(unittest.TestCase):
     
@@ -47,11 +49,13 @@ class TestCompbioAlgoEIGAsHard(unittest.TestCase):
         
         # Loop through all the proteins and get protein objects.
         for protein_pair in self.PROTEIN_PAIRS:
-            self.protein_pairs.append((EIGAs.Protein(protein_pair[0][0], protein_pair[0][1]),
-                                       EIGAs.Protein(protein_pair[1][0], protein_pair[1][1]),
+            protein1 = Protein(ProteinParser.factory('pdb', protein_pair[0]))
+            protein2 = Protein(ProteinParser.factory('pdb', protein_pair[1]))
+            self.protein_pairs.append((protein1,
+                                       protein2,
                                        protein_pair[2]
                                        ))
-        
+    
     def tearDown(self):
         """
         """

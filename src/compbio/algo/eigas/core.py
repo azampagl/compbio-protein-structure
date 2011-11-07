@@ -6,17 +6,10 @@ Yosi Shibberu and Allen Holder
 
 @author Aaron Zampaglione <azampagl@azampagl.com>
 @package EIGAs
-@copyright 2011 (c) Aaron Zampaglione
+@copyright 2011 Aaron Zampaglione
 @license MIT
 """
-from decimal import Decimal
-
-from Bio.PDB.PDBParser import PDBParser
-from numpy import diag, dot, empty, float, zeros
-from numpy.linalg import svd
-from scipy.spatial.distance import cdist
-
-from exception import EIGAsException
+from numpy import empty
 
 class EIGAs(object):
     """
@@ -146,146 +139,10 @@ class EIGAs(object):
         
         # Align the proteins if the sequences weren't provided.
         if not seq1 or not seq2:
-            _, seq1, seq2 = EIGAs.align(protein1, protein2)
+            _, seq1, seq2 = EIGAs.global_align(protein1, protein2)
         
         for i in range(len(seq1)):
             if seq1[i] != None or seq2[i] != None:
                 aligned += 1
         
         return aligned
-    
-    class Protein(object):
-        """
-        Protein
-        """
-        
-        # Name of the protein.
-        name = ""
-        
-        # Fingerprint of the protein
-        fingerprint = []
-        
-        def __init__(self, structure, file_name):
-            """
-            Initializes a protein.
-            
-            Key arguments:
-            structures -- structure tuple that contains the structure name and the .ent
-                          file location.
-            """
-            # Initialize fingerprint.
-            self.fingerprint = []
-            
-            # Set the protein name.
-            self.name = structure
-            
-            # Find the atomic coordinates from the pdb-format file.
-            coords = self.coords(file_name)
-            
-            # Calculate distance matrix
-            dmatrix = cdist(coords, coords)
-            
-            # Create the contact matrix.
-            cmatrix = self.cmatrix(dmatrix)
-            
-            # Test definition 1
-            #ei = zeros((1, len(cmatrix[0:])), dtype=float)[0]
-            #ei[0] = 1.0
-            #ej = zeros((1, len(cmatrix[0:])), dtype=float)[0]
-            #ej[1] = 1.0
-            #print(inner(ei, inner(cmatrix, ej)) == cmatrix[0][1])
-            
-            # Find the eigvalues and eigvectors of the contact matrix.
-            _, eigvalues, eigvectorsT = svd(cmatrix)
-            
-            # Check SVD decomposition
-            #c = dot(eigvectors, dot(diag(eigvalues), eigvectorsT))
-            #print(abs(cmatrix - c) < (1 ** -15))
-            
-            # Calculate r
-            r = dot((diag(eigvalues) ** 0.5), eigvectorsT)
-            
-            # Test proof 2
-            #i = 0
-            #j = 0
-            #ei = zeros((1, len(cmatrix[0:])), dtype=float)[0]
-            #ei[i] = 1.0
-            #ej = zeros((1, len(cmatrix[0:])), dtype=float)[0]
-            #ej[j] = 1.0
-            #ri = inner(r, ei).transpose()
-            #rj = inner(r, ej)
-            #print(abs(inner(ri, rj) - cmatrix[i][j]) < (1 ** -15))
-                       
-            # For each residue, we want to assign the "best"
-            #  eigenvalue.
-            #
-            # @see section 3.1 of the report
-            for j in range(len(coords)):
-                
-                max_index = None
-                max_value = None
-                
-                for i in range(len(r[:][0])):
-                    if (r[i][j] > max_value):
-                        max_index = i
-                        max_value = r[i][j]
-                
-                self.fingerprint.append(eigvalues[max_index])
-            
-        def cmatrix(self, dmatrix):
-            """
-            Creates a contact matrix.
-            
-            Key arguments:
-            dmatrix -- distance matrix
-            """
-            l = len(dmatrix)
-            rows = cols = range(l)
-            
-            ik = 1 / EIGAs.cutoff
-            
-            cmatrix = zeros((l, l), dtype=float)
-            
-            for i in rows:
-                for j in cols:
-                    value = dmatrix[i][j]
-                    if value >= 0.0 and value <= EIGAs.cutoff:
-                        cmatrix[i][j] = 1 - ik * value
-            
-            return cmatrix
-        
-        def coords(self, file_name):
-            """
-            Parses a pdb-format file and returns a list of coordinates.
-            
-            Key arguments:
-            file_name -- the location of the .ent file.
-            """
-            # Build parse object.
-            parser = PDBParser(QUIET=True)
-            
-            structure = parser.get_structure(self.name, file_name)
-            
-            # Unsure how to process multiple structures.
-            if len(structure.get_list()) < 1:
-                raise EIGAsException("Error reading structure for '" + self.name + '"')
-            
-            model = structure.get_list()[0]
-            
-            # Unsure how to process multiple models.
-            if len(model.get_list()) < 1:
-                raise EIGAsException("Error reading model for '" + self.name + '"')
-            
-            # The chain contains a list of residues.
-            chain = model.get_list()[0]
-            
-            # Keep track of the alpha carbon coordinates.
-            coords = []
-            
-            for residue in chain:
-                for atom in residue:
-                    # We're only looking at the primary carbon atom.
-                    if atom.get_name() == 'CA':
-                        coords.append(map(Decimal, (map(str, atom.get_coord()))))
-            
-            return coords
