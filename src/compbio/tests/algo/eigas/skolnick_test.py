@@ -14,7 +14,7 @@ import unittest
 from compbio.algo.eigas.core import EIGAs
 from compbio.algo.eigas.exception import EIGAsException
 
-class TestCompbioAlgoEIGA(unittest.TestCase):
+class TestCompbioAlgoEIGASkolnick(unittest.TestCase):
     
     # Folds to test.
     FOLDS = ['microbial_ribonuclease', 'cupredoxin-like']
