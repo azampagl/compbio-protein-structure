@@ -96,10 +96,10 @@ class EIGAs(object):
             matrix[i][0].indices2 = 0
     
         # Init first col.
-        for i in range(cols):
-            matrix[0][i].score = float(i)
-            matrix[0][i].indices1 = 0
-            matrix[0][i].indices2 = i
+        for j in range(cols):
+            matrix[0][j].score = float(j)
+            matrix[0][j].indices1 = 0
+            matrix[0][j].indices2 = j
             
         # Determine score using DP.
         for i in range(1, rows):
@@ -140,6 +140,14 @@ class EIGAs(object):
             s2.insert(0, node.indices2)
             node = node.prev
         
+        # Fill in missing indices in the beginning.
+        while s1[0]:
+            s1.insert(0, s1[0] - 1)
+            s2.insert(0, None)
+        while s2[0]:
+            s1.insert(0, None)
+            s2.insert(0, s2[0] - 1)
+                
         return matrix[-1][-1].score, s1, s2
     
     '''
