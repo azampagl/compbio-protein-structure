@@ -61,7 +61,7 @@ class EIGAs(object):
             _, seq1, seq2 = EIGAs.global_align(protein1, protein2)
         
         for i in range(len(seq1)):
-            if seq1[i] != None or seq2[i] != None:
+            if seq1[i] != None and seq2[i] != None:
                 aligned += 1
         
         return aligned
@@ -91,13 +91,13 @@ class EIGAs(object):
         
         # Init first row.
         for i in range(rows):
-            matrix[i][0].score = abs(fingerprint1[i] - fingerprint2[0])
+            matrix[i][0].score = float(i)#abs(fingerprint1[i] - fingerprint2[0])
             matrix[i][0].indices1 = i
             matrix[i][0].indices2 = 0
     
         # Init first col.
         for i in range(cols):
-            matrix[0][i].score = abs(fingerprint1[0] - fingerprint2[i])
+            matrix[0][i].score = float(i)#abs(fingerprint1[0] - fingerprint2[i])
             matrix[0][i].indices1 = 0
             matrix[0][i].indices2 = i
             
@@ -110,10 +110,9 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                score = abs(fingerprint1[i] - fingerprint2[j])
-                top_score = top.score + score + 1.0
-                diag_score = diag.score + score
-                left_score = left.score + score + 1.0
+                top_score = top.score + 1.0
+                diag_score = diag.score + abs(fingerprint1[i] - fingerprint2[j])
+                left_score = left.score + 1.0
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):
