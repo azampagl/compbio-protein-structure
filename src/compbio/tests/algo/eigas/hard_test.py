@@ -26,6 +26,7 @@ class TestCompbioAlgoEIGAsHard(unittest.TestCase):
     
     # .pdb style obtained from pdb.org
     #   Protein 1, Protein 2, Alignment Score
+    #PROTEIN_PAIRS = [(('1FXI', DATA_DIR + '/1FXI.pdb'), ('1UBQ', DATA_DIR + '/1UBQ.pdb'), 74)]
     PROTEIN_PAIRS = [(('1FXI', DATA_DIR + '/1FXI.pdb'), ('1UBQ', DATA_DIR + '/1UBQ.pdb'), 74), # 1.
                      (('1TEN', DATA_DIR + '/1TEN.pdb'), ('3HHR', DATA_DIR + '/3HHR.pdb'), 88), # 2.
                      (('3HLA', DATA_DIR + '/3HLA.pdb'), ('2RHE', DATA_DIR + '/2RHE.pdb'), 95), # 3.
@@ -72,7 +73,9 @@ class TestCompbioAlgoEIGAsHard(unittest.TestCase):
             
             msg = protein1.name + ' (' + str(len(protein1.fingerprint)) + ')' +  '\tvs.\t' + \
                   protein2.name + ' (' + str(len(protein2.fingerprint)) + ')' + '\t=>\t' + \
-                  str(aligned) + ' != ' + str(protein_pair[2])
+                  str(aligned) + ' <> ' + str(protein_pair[2])# + '\n' + \
+                  #', '.join([str(value) for value in seq1]) + '\n' + \
+                  #', '.join([str(value) for value in seq2]) + '\n'
             
             print(msg)
             #self.assertTrue(aligned == protein_pair[2], msg)
