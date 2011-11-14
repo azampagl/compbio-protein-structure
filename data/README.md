@@ -1,1 +1,0 @@
-http://astral.berkeley.edu/pdbstyle-1.75.html
