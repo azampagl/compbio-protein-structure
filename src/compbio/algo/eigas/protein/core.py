@@ -1,6 +1,13 @@
 """
 Basic protein for the EIGAs algorithm.
 
+Determining a fingerprint for a protein is based on the report:
+A Spectral Approach to Protein Structure
+Alignment
+Yosi Shibberu, Allen Holder
+Mathematics Department Rose-Hulman Institute of Technology
+Terre Haute, IN 47803
+
 @author Aaron Zampaglione <azampagl@azampagl.com>
 @package EIGAs
 @copyright 2011 Aaron Zampaglione

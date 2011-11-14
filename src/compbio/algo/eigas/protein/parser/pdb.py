@@ -14,7 +14,7 @@ from decimal import Decimal
 
 class PDBProteinParser(ProteinParser):
     
-    def __init__(self, name, file_name):
+    def __init__(self, name, file_name, version):
         """
         Init.
         
