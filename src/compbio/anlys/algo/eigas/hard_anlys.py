@@ -23,26 +23,35 @@ PROTEIN_PAIRS = [(HARD['1FXIa'], HARD['1UBQ'], 74),
                  ]
 
 # Title
-html = '<table>' +\
-       '    <th>' +\
-       '        <td>Protein1</td>' +\
-       '        <td>Protein1</td>' +\
-       '        <td>Protein1</td>' +\
-       '        <td>Protein1</td>' +\
-       '    </th>' +\
-       '</table>'
+html = """
+<table>
+    <th>
+        <td>Protein 1</td>
+        <td>Protein 2</td>
+        <td>Alignment</td>
+        <td>Report's Alignment</td>
+    </th>
+"""
 
-print(html)
-print('######\t|\t###Protein2###\t|\t###Score###\t|\t###Report\'s Score###')
-print('--------\t|\t--------\t|\t-----\t|\t---------------')
 for pair in PROTEIN_PAIRS:
     protein1 = Protein(ProteinParser.factory('pdb', (pair[0])))
     protein2 = Protein(ProteinParser.factory('pdb', (pair[1])))
     aligned = EIGAs.aligned(protein1=protein1, protein2=protein2)
-        
-    print(protein1.name + ' (' + str(len(protein1.fingerprint)) + ')' + \
-          '\t|\t' + \
-          protein2.name + ' (' + str(len(protein2.fingerprint)) + ')' + \
-          '\t|\t' + str(aligned) + \
-          '\t|\t' + str(pair[2])
-          )
+    
+    s = """
+    <tr>
+        <td>{0} ({1})</td>
+        <td>{2} ({3})</td>
+        <td>{4}</td>
+        <td>{5}</td>
+    </tr>
+    """
+    html += s.format(protein1.name, len(protein1.fingerprint),
+               protein2.name, len(protein2.fingerprint),
+               aligned,
+               pair[2])
+
+html += """
+</table>
+"""
+print(html)

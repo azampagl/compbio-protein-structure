@@ -1,15 +1,79 @@
-<table>    <th>        <td>Protein1</td>        <td>Protein1</td>        <td>Protein1</td>        <td>Protein1</td>    </th></table>
+<table>
+    <th>
+        <td>Protein 1</td>
+        <td>Protein 2</td>
+        <td>Alignment</td>
+        <td>Report's Alignment</td>
+    </th>
 
-###Protein1###	|	###Protein2###	|	###Score###	|	###Report's Score###
---------	|	--------	|	-----	|	---------------
-1FXIa (96)	|	1UBQ (76)	|	56	|	74
-1TEN (89)	|	3HHRb (195)	|	66	|	88
-3HLAb (99)	|	2RHE (114)	|	61	|	95
-2AZAa (129)	|	1PAZ (120)	|	69	|	109
-1CEWi (108)	|	1MOLa (94)	|	75	|	88
-1CID (177)	|	2RHE (114)	|	100	|	133
-1CRL (534)	|	1EDE (310)	|	221	|	304
-2SIM (381)	|	1NSBa (392)	|	259	|	339
-1BGEb (159)	|	2GMFa (121)	|	78	|	121
-1TIE (166)	|	4FGF (124)	|	92	|	120
-
+    <tr>
+        <td>1FXIa (96)</td>
+        <td>1UBQ (76)</td>
+        <td>56</td>
+        <td>74</td>
+    </tr>
+    
+    <tr>
+        <td>1TEN (89)</td>
+        <td>3HHRb (195)</td>
+        <td>66</td>
+        <td>88</td>
+    </tr>
+    
+    <tr>
+        <td>3HLAb (99)</td>
+        <td>2RHE (114)</td>
+        <td>61</td>
+        <td>95</td>
+    </tr>
+    
+    <tr>
+        <td>2AZAa (129)</td>
+        <td>1PAZ (120)</td>
+        <td>69</td>
+        <td>109</td>
+    </tr>
+    
+    <tr>
+        <td>1CEWi (108)</td>
+        <td>1MOLa (94)</td>
+        <td>75</td>
+        <td>88</td>
+    </tr>
+    
+    <tr>
+        <td>1CID (177)</td>
+        <td>2RHE (114)</td>
+        <td>100</td>
+        <td>133</td>
+    </tr>
+    
+    <tr>
+        <td>1CRL (534)</td>
+        <td>1EDE (310)</td>
+        <td>221</td>
+        <td>304</td>
+    </tr>
+    
+    <tr>
+        <td>2SIM (381)</td>
+        <td>1NSBa (392)</td>
+        <td>259</td>
+        <td>339</td>
+    </tr>
+    
+    <tr>
+        <td>1BGEb (159)</td>
+        <td>2GMFa (121)</td>
+        <td>78</td>
+        <td>121</td>
+    </tr>
+    
+    <tr>
+        <td>1TIE (166)</td>
+        <td>4FGF (124)</td>
+        <td>92</td>
+        <td>120</td>
+    </tr>
+    
+</table>
