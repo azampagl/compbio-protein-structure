@@ -25,12 +25,12 @@ PROTEIN_PAIRS = [(HARD['1FXIa'], HARD['1UBQ'], 74),
 # Title
 html = """
 <table>
-    <th>
-        <td>Protein 1</td>
-        <td>Protein 2</td>
-        <td>Alignment</td>
-        <td>Report's Alignment</td>
-    </th>
+    <tr>
+        <th>Protein 1</th>
+        <th>Protein 2</th>
+        <th>Alignment</th>
+        <th>Report's Alignment</th>
+    </tr>
 """
 
 for pair in PROTEIN_PAIRS:
