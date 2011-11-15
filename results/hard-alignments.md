@@ -1,3 +1,5 @@
+<table>    <th>        <td>Protein1</td>        <td>Protein1</td>        <td>Protein1</td>        <td>Protein1</td>    </th></table>
+
 ###Protein1###	|	###Protein2###	|	###Score###	|	###Report's Score###
 --------	|	--------	|	-----	|	---------------
 1FXIa (96)	|	1UBQ (76)	|	56	|	74

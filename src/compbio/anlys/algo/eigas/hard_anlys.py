@@ -23,7 +23,17 @@ PROTEIN_PAIRS = [(HARD['1FXIa'], HARD['1UBQ'], 74),
                  ]
 
 # Title
-print('###Protein1###\t|\t###Protein2###\t|\t###Score###\t|\t###Report\'s Score###')
+html = '<table>' +\
+       '    <th>' +\
+       '        <td>Protein1</td>' +\
+       '        <td>Protein1</td>' +\
+       '        <td>Protein1</td>' +\
+       '        <td>Protein1</td>' +\
+       '    </th>' +\
+       '</table>'
+
+print(html)
+print('######\t|\t###Protein2###\t|\t###Score###\t|\t###Report\'s Score###')
 print('--------\t|\t--------\t|\t-----\t|\t---------------')
 for pair in PROTEIN_PAIRS:
     protein1 = Protein(ProteinParser.factory('pdb', (pair[0])))
