@@ -13,8 +13,8 @@ from numpy import empty
 
 class EIGAs(object):
     
-    # Contact matrix cutoff threshold.
-    cutoff = 8.0
+    # Gap penalty.
+    GAP_PENALTY = 1.0
     
     class _Node(object):
         """
@@ -90,15 +90,16 @@ class EIGAs(object):
         # Initialize the matrix.
         for i in range(rows):
             for j in range(cols):
+                # Initialize matrix with difference in fingerprints.
                 matrix[i][j] = EIGAs._Node(abs(fingerprint1[i] - fingerprint2[j]))
         
-        # Init first row.
+        # Init first row.  Add gap penalties.
         for i in range(rows):
             matrix[i][0].score += float(i)
             matrix[i][0].indices1 = i
             matrix[i][0].indices2 = 0
     
-        # Init first col.
+        # Init first col.  Add gap penalties.
         for j in range(cols):
             matrix[0][j].score += float(j)
             matrix[0][j].indices1 = 0
@@ -113,9 +114,9 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.score + 1.0
+                top_score = top.score + EIGAs.GAP_PENALTY
                 diag_score = diag.score
-                left_score = left.score + 1.0
+                left_score = left.score + EIGAs.GAP_PENALTY
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):

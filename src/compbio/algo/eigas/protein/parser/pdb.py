@@ -40,7 +40,11 @@ class PDBProteinParser(ProteinParser):
             raise EIGAsException("Error reading model for '" + name + '"')
             
         # The chain contains a list of residues.
-        chain = model.get_list()[0]
+        #  Check if there is a specific one, otherwise default to 'A'
+        if version:
+            chain = model[version]
+        else:
+            chain = model['A']
             
         # Keep track of the alpha carbon coordinates.
         self._coords = []
