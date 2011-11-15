@@ -23,8 +23,8 @@ PROTEIN_PAIRS = [(HARD['1FXIa'], HARD['1UBQ'], 74),
                  ]
 
 # Title
-print('Protein1\t|\tProtein2\t|\tScore\t|\tReport\'s Score\n')
-
+print('###Protein1###\t|\t###Protein2###\t|\t###Score###\t|\t###Report\'s Score###')
+print('--------\t|\t--------\t|\t-----\t|\t---------------')
 for pair in PROTEIN_PAIRS:
     protein1 = Protein(ProteinParser.factory('pdb', (pair[0])))
     protein2 = Protein(ProteinParser.factory('pdb', (pair[1])))
