@@ -1,10 +1,12 @@
+#Alignment Score Results#
+
 <table>
-    <th>
-        <td>Protein 1</td>
-        <td>Protein 2</td>
-        <td>Alignment</td>
-        <td>Report's Alignment</td>
-    </th>
+    <tr>
+        <th>Protein 1</th>
+        <th>Protein 2</th>
+        <th>Alignment</th>
+        <th>Report's Alignment</th>
+    </tr>
 
     <tr>
         <td>1FXIa (96)</td>
