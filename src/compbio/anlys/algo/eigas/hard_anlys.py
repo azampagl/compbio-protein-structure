@@ -23,7 +23,7 @@ PROTEIN_PAIRS = [(HARD['1FXIa'], HARD['1UBQ'], 74),
                  ]
 
 # Title
-print('Protein1\tvs.\tProtein2\tScore\tReport\'s Score\n')
+print('Protein1\t|\tProtein2\t|\tScore\t|\tReport\'s Score\n')
 
 for pair in PROTEIN_PAIRS:
     protein1 = Protein(ProteinParser.factory('pdb', (pair[0])))
@@ -31,7 +31,8 @@ for pair in PROTEIN_PAIRS:
     aligned = EIGAs.aligned(protein1=protein1, protein2=protein2)
         
     print(protein1.name + ' (' + str(len(protein1.fingerprint)) + ')' + \
-          '\tvs.\t' + \
+          '\t|\t' + \
           protein2.name + ' (' + str(len(protein2.fingerprint)) + ')' + \
-          '\t' + str(aligned) + '\t' + str(pair[2])
+          '\t|\t' + str(aligned) + \
+          '\t|\t' + str(pair[2])
           )
