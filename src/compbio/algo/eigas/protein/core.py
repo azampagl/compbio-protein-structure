@@ -13,7 +13,7 @@ Terre Haute, IN 47803
 @copyright 2011 Aaron Zampaglione
 @license MIT
 """
-from numpy import diag, dot, float, zeros
+from numpy import diag, float, zeros
 from numpy.linalg import svd
 from scipy.spatial.distance import cdist
 
@@ -84,9 +84,10 @@ class Protein(object):
         #print(abs(cmatrix - c) < (1 ** -15))
         
         # Calculate r
-        r = dot((diag(eigvalues) ** 0.5), eigvectorsT)
+        r = (diag(eigvalues) ** 0.5) * eigvectorsT
         
         # Test proof 2
+        #from numpy import inner
         #i = 0
         #j = 0
         #ei = zeros((1, len(cmatrix[0:])), dtype=float)[0]
