@@ -104,9 +104,9 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.gap + top.score + EIGAs.GAP_PENALTY
+                top_score = top.gap + EIGAs.GAP_PENALTY
                 diag_score = diag.gap + diag.score
-                left_score = left.gap + left.score + EIGAs.GAP_PENALTY
+                left_score = left.gap + EIGAs.GAP_PENALTY
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):
