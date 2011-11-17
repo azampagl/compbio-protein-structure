@@ -10,6 +10,14 @@ from compbio.algo.eigas.protein.core import Protein
 from compbio.algo.eigas.protein.parser.core import ProteinParser
 from compbio.common.data import HARD
 
+import getopt
+import sys
+
+# Get command line args.
+opts, args = getopt.getopt(sys.argv[1:], ':o')
+if not len(args):
+    raise Exception('Missing output file.')
+
 PROTEIN_PAIRS = [(HARD['1FXIa'], HARD['1UBQ'], 74),
                  (HARD['1TEN'], HARD['3HHRb'], 88),
                  (HARD['3HLAb'], HARD['2RHE'], 95),
@@ -54,4 +62,6 @@ for pair in PROTEIN_PAIRS:
 html += """
 </table>
 """
-print(html)
+
+open(args[0], 'w').write(html)
+print('Complete.')
