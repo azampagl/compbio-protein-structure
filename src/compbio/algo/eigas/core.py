@@ -105,7 +105,7 @@ class EIGAs(object):
                 
                 # Find the scores.
                 top_score = top.gap + EIGAs.GAP_PENALTY
-                diag_score = diag.gap + diag.score
+                diag_score = diag.gap + matrix[i][j].score
                 left_score = left.gap + EIGAs.GAP_PENALTY
                 
                 # Top
