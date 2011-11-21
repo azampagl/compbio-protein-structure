@@ -20,17 +20,6 @@ class EIGAs(object):
         """
         Node of the DP matrix.
         """
-        # Backpointer.
-        prev = None
-            
-        # Score at the current node.
-        score = 0.0
-            
-        # Indices of protein 1
-        indices1 = None
-            
-        # Indices of protein 2
-        indices2 = None
             
         def __init__(self, score=0.0):
             """
@@ -41,6 +30,7 @@ class EIGAs(object):
             """
             self.prev = None
             self.score = score
+            self.gap = 0.0
             self.indices1 = None
             self.indices2 = None
     
@@ -95,13 +85,13 @@ class EIGAs(object):
         
         # Init first row.  Add gap penalties.
         for i in range(rows):
-            matrix[i][0].score += float(i)
+            matrix[i][0].gap = float(i)
             matrix[i][0].indices1 = i
             matrix[i][0].indices2 = 0
     
         # Init first col.  Add gap penalties.
         for j in range(cols):
-            matrix[0][j].score += float(j)
+            matrix[0][j].gap = float(j)
             matrix[0][j].indices1 = 0
             matrix[0][j].indices2 = j
             
@@ -114,25 +104,25 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.score + EIGAs.GAP_PENALTY
-                diag_score = diag.score
-                left_score = left.score + EIGAs.GAP_PENALTY
+                top_score = top.gap + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
+                diag_score = diag.gap + matrix[i - 1][j - 1].score
+                left_score = left.gap + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):
                     matrix[i][j].prev = top
-                    matrix[i][j].score += top_score
+                    matrix[i][j].gap = top.gap + EIGAs.GAP_PENALTY
                     matrix[i][j].indices1 = i
                 # Diagonal
                 elif (diag_score <= top_score and diag_score <= left_score):
                     matrix[i][j].prev = diag
-                    matrix[i][j].score += diag_score
+                    matrix[i][j].gap = diag.gap
                     matrix[i][j].indices1 = i
                     matrix[i][j].indices2 = j
                 # Left
                 else:
                     matrix[i][j].prev = left
-                    matrix[i][j].score += left_score
+                    matrix[i][j].gap = left.gap + EIGAs.GAP_PENALTY
                     matrix[i][j].indices2 = j
         
         # Follow the pointers backwards to rebuild the globally aligned sequences.
@@ -152,4 +142,4 @@ class EIGAs(object):
             s1.insert(0, None)
             s2.insert(0, s2[0] - 1)
                 
-        return matrix[-1][-1].score, s1, s2
+        return matrix, s1, s2
