@@ -104,27 +104,24 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.gap + EIGAs.GAP_PENALTY
-                diag_score = diag.gap + matrix[i][j].score
-                left_score = left.gap + EIGAs.GAP_PENALTY
+                top_score = top.gap + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
+                diag_score = diag.gap + matrix[i - 1][j - 1].score
+                left_score = left.gap + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):
                     matrix[i][j].prev = top
-                    #matrix[i][j].score += top_score
                     matrix[i][j].gap = top.gap + EIGAs.GAP_PENALTY
                     matrix[i][j].indices1 = i
                 # Diagonal
                 elif (diag_score <= top_score and diag_score <= left_score):
                     matrix[i][j].prev = diag
-                    #matrix[i][j].score += diag_score
                     matrix[i][j].gap = diag.gap
                     matrix[i][j].indices1 = i
                     matrix[i][j].indices2 = j
                 # Left
                 else:
                     matrix[i][j].prev = left
-                    #matrix[i][j].score += left_score
                     matrix[i][j].gap = left.gap + EIGAs.GAP_PENALTY
                     matrix[i][j].indices2 = j
         
@@ -145,4 +142,4 @@ class EIGAs(object):
             s1.insert(0, None)
             s2.insert(0, s2[0] - 1)
                 
-        return matrix[-1][-1].score, s1, s2
+        return matrix, s1, s2

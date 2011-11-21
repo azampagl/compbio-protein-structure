@@ -2,7 +2,7 @@
 Analysis of hard alignment proteins
 @author Aaron Zampaglione <azapagl@azampagl.com>
 @package EIGAs
-@copyright 2011 (c) Aaron Zampaglione
+@copyright 2011 Aaron Zampaglione
 @license MIT
 """
 from compbio.algo.eigas.core import EIGAs
