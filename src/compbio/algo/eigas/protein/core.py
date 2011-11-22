@@ -83,8 +83,8 @@ class Protein(object):
         #c = dot(eigvectors, dot(diag(eigvalues), eigvectorsT))
         #print(abs(cmatrix - c) < (1 ** -15))
         
-        # Calculate r
-        r = dot(diag(eigvalues) ** 0.5, eigvectorsT)
+        # Calculate R
+        self.r = dot(diag(eigvalues) ** 0.5, eigvectorsT)
         
         # Test proof 2
         #from numpy import inner
@@ -106,9 +106,9 @@ class Protein(object):
             max_index = None
             max_value = None
                 
-            for i in range(len(r[:][0])):
-                if (r[i][j] > max_value):
+            for i in range(len(self.r[:][0])):
+                if (self.r[i][j] > max_value):
                     max_index = i
-                    max_value = r[i][j]
+                    max_value = self.r[i][j]
                 
             self.fingerprint.append(eigvalues[max_index])
