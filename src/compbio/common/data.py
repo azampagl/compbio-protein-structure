@@ -12,7 +12,9 @@ import os
 # Data dir should always be two levels up.
 DIR = os.sep.join((os.path.dirname(compbio.__file__).split(os.sep))[:-2]) + os.sep + 'data'
 
+#
 # Hard alignment proteins.
+#
 HARD_EXT = 'pdb'
 HARD_DIR = os.path.abspath(DIR + os.sep + 'hard' + os.sep + HARD_EXT + os.sep)
 HARD = {}
@@ -48,17 +50,15 @@ HARD['2GMFa'] = ('2GMFa', HARD['2GMF'][1], 'A')
 del HARD['2GMF']
 
 #
+# Skolnick
 #
-#
-
-# Skolnick data set.
 SKOLNICK_EXT = 'pdb'
 SKOLNICK_DIR = os.path.abspath(DIR + os.sep + 'skolnick' + os.sep + HARD_EXT + os.sep)
 SKOLNICK = {}
 for d in os.listdir(SKOLNICK_DIR):
     SKOLNICK[d.upper()] = {}
     for f in os.listdir(SKOLNICK_DIR + os.sep + d):
-        SKOLNICK[d.upper()][f.rsplit('.', 1)[0]] = (f.rsplit('.', 1)[0], os.path.abspath(SKOLNICK_DIR + os.sep + d + os.sep +f), None)
+        SKOLNICK[d.upper()][f.rsplit('.', 1)[0]] = (f.rsplit('.', 1)[0], os.path.abspath(SKOLNICK_DIR + os.sep + d + os.sep + f), None)
 
 # Special cases for skolnick.
 SKOLNICK['FLAVODXIN-LIKE']['1QMPA'] = ('1QMPA', SKOLNICK['FLAVODXIN-LIKE']['1QMP'][1], 'A')
@@ -79,3 +79,14 @@ SKOLNICK['MICROBIAL_RIBONUCLEASE']['1RN1A'] = ('1RN1A', SKOLNICK['MICROBIAL_RIBO
 SKOLNICK['MICROBIAL_RIBONUCLEASE']['1RN1B'] = ('1RN1B', SKOLNICK['MICROBIAL_RIBONUCLEASE']['1RN1'][1], 'B')
 SKOLNICK['MICROBIAL_RIBONUCLEASE']['1RN1C'] = ('1RN1C', SKOLNICK['MICROBIAL_RIBONUCLEASE']['1RN1'][1], 'C')
 del SKOLNICK['MICROBIAL_RIBONUCLEASE']['1RN1']
+
+#
+# Moitf
+#
+MOTIF_EXT = 'pdb'
+MOTIF_DIR = os.path.abspath(DIR + os.sep + 'motif' + os.sep + HARD_EXT + os.sep)
+MOTIF = {}
+for d in os.listdir(MOTIF_DIR):
+    MOTIF[d.upper()] = {}
+    for f in os.listdir(MOTIF_DIR + os.sep + d):
+        MOTIF[d.upper()][f.rsplit('.', 1)[0]] = (f.rsplit('.', 1)[0], os.path.abspath(MOTIF_DIR + os.sep + d + os.sep + f), None)

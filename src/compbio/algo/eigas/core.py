@@ -145,13 +145,16 @@ class EIGAs(object):
         return matrix, s1, s2
     
     @classmethod
-    def local_align(cls, protein1, protein2):
+    def local_align(cls, protein1, protein2, min_value=0.0):
         """
-        Globally aligns two proteins.
+        Finds the best alignment of two proteins.
         
         Key arguments:
-        protein1 -- the first protein.
-        protein2 -- the second protein.
+        protein1  -- the first protein.
+        protein2  -- the second protein.
+        min_value -- only return alignments that meet a minimum value (think
+                     of this as a threshold for the minimum number of structurally
+                     aligned residues).
         """
         # Quick reference the protein fingerprints.
         fingerprint1 = protein1.fingerprint
@@ -188,7 +191,7 @@ class EIGAs(object):
         matrix[0][0].indices1 = None
         matrix[0][0].indices2 = None
         
-        optimal = matrix[1][1]
+        optimals = []
             
         # Determine score using DP.
         for i in range(1, rows):
@@ -198,7 +201,7 @@ class EIGAs(object):
                 diag = matrix[i - 1][j - 1]
                 left = matrix[i][j - 1]
                 
-                # Check score at the current spot.
+                # See if the fingeprints at the current position 'match'.
                 if matrix[i][j].score < EIGAs.GAP_PENALTY:
                     value = 2.0 * EIGAs.GAP_PENALTY
                 else:
@@ -230,16 +233,35 @@ class EIGAs(object):
                 #    matrix[i][j].prev = None
                 #    matrix[i][j].value = 0.0
                 
-                if matrix[i][j].value > optimal.value:
-                    optimal = matrix[i][j]
+                # If the value is greater than 0, we'll consider it for now.
+                #  We need to preserve the order, so add to the front of the list.
+                if matrix[i][j].value > min_value:
+                    optimals.insert(0, matrix[i][j])
         
-        # Follow the pointers backwards to rebuild the globally aligned sequences.
-        s1 = []
-        s2 = []
-        node = optimal
-        while node != None:
-            s1.insert(0, node.indices1)
-            s2.insert(0, node.indices2)
-            node = node.prev
+        # Sort the optimal list, order is preserved so the top valued node deepest into
+        #  the matrix is considered first.
+        optimals.sort(key=lambda node: node.value)
+        
+        # We could probably do some post filtering here as well...
+        #  for now, lets just return the top node
+        #optimals = optimals[:1]
+        
+        seqs = []
+        while optimals:
+            optimal = optimals.pop(0)
+            # Follow the pointers backwards to rebuild the aligned sequences.
+            seq1 = []
+            seq2 = []
+            node = optimal
+            while node != None:
+                # If this node is in the list, remove it so we don't process this path again!
+                try:
+                    optimals.remove(node)
+                except ValueError:
+                    pass
+                seq1.insert(0, node.indices1)
+                seq2.insert(0, node.indices2)
+                node = node.prev
+            seqs.insert(0, (seq1, seq2))
                 
-        return matrix, s1, s2
+        return matrix, seqs
