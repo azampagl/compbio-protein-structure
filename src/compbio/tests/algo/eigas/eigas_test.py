@@ -22,7 +22,7 @@ class TestCompbioAlgoEIGAs(unittest.TestCase):
         protein = Protein(ProteinParser.factory('pdb', ('1BGE', HARD['1BGE'][0], HARD['1BGE'][1])))
         
         matrix, seq1, seq2 = EIGAs.global_align(protein, protein)
-        self.assertEqual(matrix[-1][-1].gap, 0.0)
+        self.assertEqual(matrix[-1][-1].value, 0.0)
         self.assertEqual(seq1, seq2)
 
 if __name__ == "__main__":

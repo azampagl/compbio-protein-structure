@@ -30,7 +30,7 @@ class EIGAs(object):
             """
             self.prev = None
             self.score = score
-            self.gap = 0.0
+            self.value = 0.0
             self.indices1 = None
             self.indices2 = None
     
@@ -83,15 +83,15 @@ class EIGAs(object):
                 # Initialize matrix with difference in fingerprints.
                 matrix[i][j] = EIGAs._Node(abs(fingerprint1[i] - fingerprint2[j]))
         
-        # Init first row.  Add gap penalties.
+        # Init first row.
         for i in range(rows):
-            matrix[i][0].gap = float(i)
+            matrix[i][0].value = float(i)
             matrix[i][0].indices1 = i
             matrix[i][0].indices2 = 0
     
-        # Init first col.  Add gap penalties.
+        # Init first col.
         for j in range(cols):
-            matrix[0][j].gap = float(j)
+            matrix[0][j].value = float(j)
             matrix[0][j].indices1 = 0
             matrix[0][j].indices2 = j
             
@@ -104,25 +104,25 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.gap + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
-                diag_score = diag.gap + matrix[i - 1][j - 1].score
-                left_score = left.gap + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
+                top_score = top.value + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
+                diag_score = diag.value + matrix[i - 1][j - 1].score
+                left_score = left.value + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
                 
                 # Top
                 if (top_score <= diag_score and top_score <= left_score):
                     matrix[i][j].prev = top
-                    matrix[i][j].gap = top.gap + EIGAs.GAP_PENALTY
+                    matrix[i][j].value = top.value + EIGAs.GAP_PENALTY
                     matrix[i][j].indices1 = i
                 # Diagonal
                 elif (diag_score <= top_score and diag_score <= left_score):
                     matrix[i][j].prev = diag
-                    matrix[i][j].gap = diag.gap
+                    matrix[i][j].value = diag.value
                     matrix[i][j].indices1 = i
                     matrix[i][j].indices2 = j
                 # Left
                 else:
                     matrix[i][j].prev = left
-                    matrix[i][j].gap = left.gap + EIGAs.GAP_PENALTY
+                    matrix[i][j].value = left.value + EIGAs.GAP_PENALTY
                     matrix[i][j].indices2 = j
         
         # Follow the pointers backwards to rebuild the globally aligned sequences.
@@ -141,5 +141,105 @@ class EIGAs(object):
         while s2[0]:
             s1.insert(0, None)
             s2.insert(0, s2[0] - 1)
+                
+        return matrix, s1, s2
+    
+    @classmethod
+    def local_align(cls, protein1, protein2):
+        """
+        Globally aligns two proteins.
+        
+        Key arguments:
+        protein1 -- the first protein.
+        protein2 -- the second protein.
+        """
+        # Quick reference the protein fingerprints.
+        fingerprint1 = protein1.fingerprint
+        fingerprint2 = protein2.fingerprint
+        
+        rows = len(fingerprint1) + 1
+        cols = len(fingerprint2) + 1
+        
+        #Build a matrix full of Prefix objects
+        matrix = empty((rows, cols), dtype=object)
+        # Initialize the matrix.
+        for i in range(1, rows):
+            for j in range(1, cols):
+                # Initialize matrix with difference in fingerprints.
+                matrix[i][j] = EIGAs._Node(abs(fingerprint1[i - 1] - fingerprint2[j - 1]))
+        
+        # Init first row.
+        for i in range(rows):
+            matrix[i][0] = EIGAs._Node()
+            matrix[i][0].value = 0.0
+            matrix[i][0].indices1 = i
+            matrix[i][0].indices2 = 0
+    
+        # Init first col.
+        for j in range(cols):
+            matrix[0][j] = EIGAs._Node()
+            matrix[0][j].value = 0.0
+            matrix[0][j].indices1 = 0
+            matrix[0][j].indices2 = j
+        
+        # Top left corner.
+        matrix[0][0] = EIGAs._Node()
+        matrix[0][0].value = 0.0
+        matrix[0][0].indices1 = None
+        matrix[0][0].indices2 = None
+        
+        optimal = matrix[1][1]
+            
+        # Determine score using DP.
+        for i in range(1, rows):
+            for j in range(1, cols):                
+                # Find the previous top, diag, and left components.
+                top = matrix[i - 1][j]
+                diag = matrix[i - 1][j - 1]
+                left = matrix[i][j - 1]
+                
+                # Check score at the current spot.
+                if matrix[i][j].score < EIGAs.GAP_PENALTY:
+                    value = 2.0 * EIGAs.GAP_PENALTY
+                else:
+                    value = -1.0 * EIGAs.GAP_PENALTY
+                
+                # Find the values for each direction.
+                top_score = top.value - EIGAs.GAP_PENALTY
+                diag_score = diag.value + value
+                left_score = left.value - EIGAs.GAP_PENALTY
+                
+                # Top
+                if (top_score > diag_score and top_score > left_score and top_score > 0.0):
+                    matrix[i][j].prev = top
+                    matrix[i][j].value = top_score
+                    matrix[i][j].indices1 = i
+                # Diagonal
+                elif (diag_score > top_score and diag_score > left_score and diag_score > 0.0):
+                    matrix[i][j].prev = diag
+                    matrix[i][j].value = diag_score
+                    matrix[i][j].indices1 = i
+                    matrix[i][j].indices2 = j
+                # Left
+                elif (left_score > 0.0):
+                    matrix[i][j].prev = left
+                    matrix[i][j].value = left_score
+                    matrix[i][j].indices2 = j
+                # Fall through not necessary, it's handled during init.
+                #else:
+                #    matrix[i][j].prev = None
+                #    matrix[i][j].value = 0.0
+                
+                if matrix[i][j].value > optimal.value:
+                    optimal = matrix[i][j]
+        
+        # Follow the pointers backwards to rebuild the globally aligned sequences.
+        s1 = []
+        s2 = []
+        node = optimal
+        while node != None:
+            s1.insert(0, node.indices1)
+            s2.insert(0, node.indices2)
+            node = node.prev
                 
         return matrix, s1, s2
