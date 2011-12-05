@@ -10,6 +10,7 @@ Yosi Shibberu and Allen Holder
 @license MIT
 """
 from numpy import empty
+from copy import deepcopy
 
 class EIGAs(object):
     
@@ -104,25 +105,28 @@ class EIGAs(object):
                 left = matrix[i][j - 1]
                 
                 # Find the scores.
-                top_score = top.gap + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
-                diag_score = diag.gap + matrix[i - 1][j - 1].score
-                left_score = left.gap + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
+                #top_score = top.gap + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
+                #diag_score = diag.gap + matrix[i - 1][j - 1].score
+                #left_score = left.gap + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
+                top_score = top.gap - 2
+                diag_score = diag.gap + EIGAs.__eval(diag.score)
+                left_score = left.gap - 2
                 
                 # Top
-                if (top_score <= diag_score and top_score <= left_score):
+                if (top_score > diag_score and top_score > left_score):
                     matrix[i][j].prev = top
-                    matrix[i][j].gap = top.gap + EIGAs.GAP_PENALTY
+                    matrix[i][j].gap = top_score#top.gap + EIGAs.GAP_PENALTY
                     matrix[i][j].indices1 = i
                 # Diagonal
-                elif (diag_score <= top_score and diag_score <= left_score):
+                elif (diag_score > top_score and diag_score > left_score):
                     matrix[i][j].prev = diag
-                    matrix[i][j].gap = diag.gap
+                    matrix[i][j].gap = diag_score#diag.gap
                     matrix[i][j].indices1 = i
                     matrix[i][j].indices2 = j
                 # Left
                 else:
                     matrix[i][j].prev = left
-                    matrix[i][j].gap = left.gap + EIGAs.GAP_PENALTY
+                    matrix[i][j].gap = left_score#left.gap + EIGAs.GAP_PENALTY
                     matrix[i][j].indices2 = j
         
         # Follow the pointers backwards to rebuild the globally aligned sequences.
@@ -143,3 +147,36 @@ class EIGAs(object):
             s2.insert(0, s2[0] - 1)
                 
         return matrix, s1, s2
+    
+    def local_align(self, protein1, protein2):
+        # Quick reference the protein fingerprints.
+        fingerprint1 = protein1.fingerprint
+        fingerprint2 = protein2.fingerprint
+        
+        rows = len(fingerprint1)
+        cols = len(fingerprint2)
+        
+        #Build a matrix full of Prefix objects
+        matrix = empty((rows, cols), dtype=object)
+        # Initialize the matrix.
+        for i in range(rows):
+            for j in range(cols):
+                # Initialize matrix with difference in fingerprints.
+                matrix[i][j] = EIGAs._Node(abs(fingerprint1[i] - fingerprint2[j]))
+        
+        paths = []
+        for i in range(1, rows):
+            for j in range(1, cols):
+                smatrix, _, _ = EIGAs._align(i, j, deepcopy(matrix), rows, cols)
+                paths.append(smatrix[-1][-1])
+    
+    def __local_align(self, node, i, j):
+        pass
+    
+    @staticmethod
+    def __eval(score):
+        if score < EIGAs.GAP_PENALTY:
+            return 1
+        else:
+            return -1
+        
