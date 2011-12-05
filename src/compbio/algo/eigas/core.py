@@ -108,9 +108,9 @@ class EIGAs(object):
                 #top_score = top.gap + matrix[i - 1][j].score + EIGAs.GAP_PENALTY
                 #diag_score = diag.gap + matrix[i - 1][j - 1].score
                 #left_score = left.gap + matrix[i][j - 1].score + EIGAs.GAP_PENALTY
-                top_score = top.gap - 2
+                top_score = top.gap - 1
                 diag_score = diag.gap + EIGAs.__eval(diag.score)
-                left_score = left.gap - 2
+                left_score = left.gap - 1
                 
                 # Top
                 if (top_score > diag_score and top_score > left_score):
@@ -176,7 +176,7 @@ class EIGAs(object):
     @staticmethod
     def __eval(score):
         if score < EIGAs.GAP_PENALTY:
-            return 1
+            return 2
         else:
             return -1
         
