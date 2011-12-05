@@ -44,6 +44,7 @@ html = """
 for pair in PROTEIN_PAIRS:
     protein1 = Protein(ProteinParser.factory('pdb', (pair[0])))
     protein2 = Protein(ProteinParser.factory('pdb', (pair[1])))
+    _, s1, s2 =  EIGAs.global_align(protein1, protein2)
     aligned = EIGAs.aligned(protein1=protein1, protein2=protein2)
     
     s = """
