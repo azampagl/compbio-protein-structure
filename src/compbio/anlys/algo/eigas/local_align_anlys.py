@@ -22,12 +22,15 @@ import pprint
 protein1 = Protein(ProteinParser.factory('pdb', MOTIF['MICROBIAL-RIBONUCLEASE']['1RDS']))
 protein2 = Protein(ProteinParser.factory('pdb', MOTIF['MICROBIAL-RIBONUCLEASE']['1BU4']))
 
-matrix, seqs = EIGAs.local_align(protein1, protein2)
+matrix, seqs = EIGAs.local_align(protein1, protein2, 6.0)
 
 print(len(seqs))
 for seq in seqs:
-    print(seq)
-    print(matrix[seq[0][-1]][seq[1][-1]].value)
+    print(seq[0])
+    print(seq[1])
+    print(seq[2])
+    print([abs(protein1.fingerprint[i] - protein2.fingerprint[j]) for i, j in zip(seq[1], seq[2])])
+    print('')
 #pprint.pprint(seqs[0])
 #pprint.pprint(seqs[2])
 #pprint.pprint(seqs[30])

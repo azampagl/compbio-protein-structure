@@ -248,12 +248,13 @@ class EIGAs(object):
         
         seqs = []
         while optimals:
-            optimal = optimals.pop(0)
-            # Follow the pointers backwards to rebuild the aligned sequences.
+            optimal = optimals.pop()
+            
             seq1 = []
             seq2 = []
             node = optimal
-            while node != None:
+            
+            while node != None and node.indices1 != None and node.indices2 != None:
                 # If this node is in the list, remove it so we don't process this path again!
                 try:
                     optimals.remove(node)
@@ -262,6 +263,8 @@ class EIGAs(object):
                 seq1.insert(0, node.indices1)
                 seq2.insert(0, node.indices2)
                 node = node.prev
-            seqs.insert(0, (seq1, seq2))
+            
+            if len(seq1) > 3:
+                seqs.append((optimal.value, seq1, seq2))
                 
         return matrix, seqs
