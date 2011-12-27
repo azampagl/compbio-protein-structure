@@ -1,0 +1,1 @@
+This protein data set was used for local alignment analysis.  The goal was to recognizr patterns in local alignments and possible GO terms.
