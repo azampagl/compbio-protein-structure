@@ -20,16 +20,16 @@ import pprint
 #    raise Exception('Missing output file.')
 
 protein1 = Protein(ProteinParser.factory('pdb', MOTIF['MICROBIAL-RIBONUCLEASE']['1RDS']))
-protein2 = Protein(ProteinParser.factory('pdb', MOTIF['MICROBIAL-RIBONUCLEASE']['1BU4']))
+#protein2 = Protein(ProteinParser.factory('pdb', MOTIF['MICROBIAL-RIBONUCLEASE']['1BU4']))
+protein2 = Protein(ProteinParser.factory('pdb', MOTIF['MICROBIAL-RIBONUCLEASE']['1RDS']))
 
-matrix, seqs = EIGAs.local_align(protein1, protein2, 6.0)
+matrix, seqs = EIGAs.local_align(protein1, protein2)
 
-print(len(seqs))
-for seq in seqs:
-    print(seq[0])
+for seq in [seqs[0]]:
+    print(seq[0].value)
     print(seq[1])
     print(seq[2])
-    print([abs(protein1.fingerprint[i] - protein2.fingerprint[j]) for i, j in zip(seq[1], seq[2])])
+    # print([abs(protein1.fingerprint[i] - protein2.fingerprint[j]) for i, j in zip(seq[1], seq[2])])
     print('')
 #pprint.pprint(seqs[0])
 #pprint.pprint(seqs[2])

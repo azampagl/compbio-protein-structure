@@ -14,14 +14,14 @@ from numpy import empty
 class EIGAs(object):
     
     # Gap penalty.
-    GAP_PENALTY = 1.0
+    GAP_PENALTY = 1
     
-    class _Node(object):
+    class Node(object):
         """
         Node of the DP matrix.
         """
-            
-        def __init__(self, score=0.0):
+        
+        def __init__(self, score=0):
             """
             Initializes the node.
             
@@ -30,7 +30,8 @@ class EIGAs(object):
             """
             self.prev = None
             self.score = score
-            self.value = 0.0
+            self.value = 0
+            self.gaps = 0
             self.indices1 = None
             self.indices2 = None
     
@@ -145,16 +146,16 @@ class EIGAs(object):
         return matrix, s1, s2
     
     @classmethod
-    def local_align(cls, protein1, protein2, min_value=0.0):
+    def local_align(cls, protein1, protein2, max_gaps=0):
         """
-        Finds the best alignment of two proteins.
+        Local alignment.
         
         Key arguments:
         protein1  -- the first protein.
         protein2  -- the second protein.
         min_value -- only return alignments that meet a minimum value (think
                      of this as a threshold for the minimum number of structurally
-                     aligned residues).
+                     aligned residues). [optional]
         """
         # Quick reference the protein fingerprints.
         fingerprint1 = protein1.fingerprint
@@ -169,27 +170,24 @@ class EIGAs(object):
         for i in range(1, rows):
             for j in range(1, cols):
                 # Initialize matrix with difference in fingerprints.
-                matrix[i][j] = EIGAs._Node(abs(fingerprint1[i - 1] - fingerprint2[j - 1]))
+                matrix[i][j] = EIGAs.Node(abs(fingerprint1[i - 1] - fingerprint2[j - 1]))
         
         # Init first row.
-        for i in range(rows):
-            matrix[i][0] = EIGAs._Node()
-            matrix[i][0].value = 0.0
+        for i in range(1, rows):
+            matrix[i][0] = EIGAs.Node()
+            matrix[i][0].gaps = i
             matrix[i][0].indices1 = i
-            matrix[i][0].indices2 = 0
+            matrix[i][0].indices2 = None
     
         # Init first col.
-        for j in range(cols):
-            matrix[0][j] = EIGAs._Node()
-            matrix[0][j].value = 0.0
-            matrix[0][j].indices1 = 0
+        for j in range(1, cols):
+            matrix[0][j] = EIGAs.Node()
+            matrix[0][j].gaps = j
+            matrix[0][j].indices1 = None
             matrix[0][j].indices2 = j
         
         # Top left corner.
-        matrix[0][0] = EIGAs._Node()
-        matrix[0][0].value = 0.0
-        matrix[0][0].indices1 = None
-        matrix[0][0].indices2 = None
+        matrix[0][0] = EIGAs.Node()
         
         optimals = []
             
@@ -203,40 +201,43 @@ class EIGAs(object):
                 
                 # See if the fingeprints at the current position 'match'.
                 if matrix[i][j].score < EIGAs.GAP_PENALTY:
-                    value = 2.0 * EIGAs.GAP_PENALTY
+                    value = 2 * EIGAs.GAP_PENALTY
                 else:
-                    value = -1.0 * EIGAs.GAP_PENALTY
+                    value = -1 * EIGAs.GAP_PENALTY
                 
                 # Find the values for each direction.
                 top_score = top.value - EIGAs.GAP_PENALTY
                 diag_score = diag.value + value
                 left_score = left.value - EIGAs.GAP_PENALTY
                 
-                # Top
-                if (top_score > diag_score and top_score > left_score and top_score > 0.0):
-                    matrix[i][j].prev = top
-                    matrix[i][j].value = top_score
-                    matrix[i][j].indices1 = i
                 # Diagonal
-                elif (diag_score > top_score and diag_score > left_score and diag_score > 0.0):
+                if (diag_score >= top_score and diag_score >= left_score and diag_score >= 0):
                     matrix[i][j].prev = diag
+                    matrix[i][j].gaps = diag.gaps
                     matrix[i][j].value = diag_score
                     matrix[i][j].indices1 = i
-                    matrix[i][j].indices2 = j
+                    matrix[i][j].indices2 = j 
+                # Top
+                elif (top_score >= diag_score and top_score >= left_score and top_score >= 0):
+                    matrix[i][j].prev = top
+                    matrix[i][j].gaps = top.gaps + 1
+                    matrix[i][j].value = top_score
+                    matrix[i][j].indices1 = i
                 # Left
-                elif (left_score > 0.0):
+                elif (left_score >= 0):
                     matrix[i][j].prev = left
+                    matrix[i][j].gaps = left.gaps + 1
                     matrix[i][j].value = left_score
-                    matrix[i][j].indices2 = j
+                    matrix[i][j].indices2 = j                               
                 # Fall through not necessary, it's handled during init.
                 #else:
                 #    matrix[i][j].prev = None
-                #    matrix[i][j].value = 0.0
+                #    matrix[i][j].value = 0
                 
                 # If the value is greater than 0, we'll consider it for now.
                 #  We need to preserve the order, so add to the front of the list.
-                if matrix[i][j].value > min_value:
-                    optimals.insert(0, matrix[i][j])
+                if matrix[i][j].gaps <= max_gaps:
+                    optimals.append(matrix[i][j])
         
         # Sort the optimal list, order is preserved so the top valued node deepest into
         #  the matrix is considered first.
@@ -254,17 +255,34 @@ class EIGAs(object):
             seq2 = []
             node = optimal
             
-            while node != None and node.indices1 != None and node.indices2 != None:
+            while node != None:
                 # If this node is in the list, remove it so we don't process this path again!
                 try:
                     optimals.remove(node)
                 except ValueError:
                     pass
-                seq1.insert(0, node.indices1)
-                seq2.insert(0, node.indices2)
+                
+                # The true indices need to be shifted back one due to DP.
+                index1 = node.indices1
+                if index1 != None:
+                    index1 -= 1
+                index2 = node.indices2
+                if index2 != None:
+                    index2 -= 1
+                
+                seq1.insert(0, index1)
+                seq2.insert(0, index2)
+                
                 node = node.prev
             
-            if len(seq1) > 3:
-                seqs.append((optimal.value, seq1, seq2))
-                
+            # Remove unnecessary gap due to first node at 0,0.
+            if seq1[0] == None and seq2[0] == None:
+                seq1.pop(0)
+                seq2.pop(0)
+            
+            # This will the trim a lot of unecessary alignments that might have passed the
+            #  max gap threshold.
+            if len(seq1) > 0 and len(seq2) > 0:
+                seqs.append((optimal, seq1, seq2))
+        
         return matrix, seqs
